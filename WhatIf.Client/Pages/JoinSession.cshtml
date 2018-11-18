@@ -3,11 +3,16 @@
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 @inject ISessionService SessionService
 
-<h1>Join Session @Session.Name</h1>
+<h1>Join Session: @Session.Name</h1>
 
-<p>Enter your nickname</p>
-<input type="text" bind="@Nickname" />
-<button class="btn btn-primary" onclick="@Join">Join</button>
+<div>
+    <div class="form-group">
+        <label for="inputNickname">Nickname</label>
+        <input type="text" bind="@Nickname" class="form-control" id="inputNickname" placeholder="Nickname"/>
+        <small id="emailHelp" class="form-text text-muted">This is the name everyone else will see</small>
+    </div>
+    <button type="submit" onclick="@Join" class="btn btn-primary">Join</button>
+</div>
 
 @functions {
     [Parameter]
@@ -21,7 +26,8 @@
 
     void Join()
     {
-        UriHelper.NavigateTo($"/Session/{SessionId}");
+        if (!string.IsNullOrEmpty(Nickname))
+            UriHelper.NavigateTo($"/Session/{SessionId}");
     }
 
     protected override async Task OnInitAsync()
