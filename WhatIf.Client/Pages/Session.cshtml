@@ -1,0 +1,9 @@
+﻿@page "/session/{SessionId:int}"
+<h1>Session</h1>
+
+<p>Current session: @SessionId</p>
+
+@functions {
+    [Parameter]
+    protected int SessionId { get; set; }
+}

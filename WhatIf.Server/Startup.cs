@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Blazor.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using System.Linq;
 using System.Net.Mime;
+using LightInject;
+using LightInject.Microsoft.DependencyInjection;
 
 namespace WhatIf.Server
 {
@@ -13,9 +16,9 @@ namespace WhatIf.Server
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc().AddControllersAsServices();
 
             services.AddResponseCompression(options =>
             {
@@ -25,6 +28,10 @@ namespace WhatIf.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
+
+            var containerOptions = new ContainerOptions {EnablePropertyInjection = false};
+            var container = new ServiceContainer(containerOptions);
+            return container.CreateServiceProvider(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

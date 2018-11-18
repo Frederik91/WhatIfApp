@@ -1,7 +1,28 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Http.Extensions
+@using WhatIf.Shared.Services.Session
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 
-<h1>Hello, world!</h1>
+<h1>Let's play "What if?"!</h1>
 
-Welcome to your new app.
+<input type="number" bind="@SessionId"/>
+<button onclick="@JoinSession">Join</button>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@functions
+{
+    public int SessionId { get; set; } = 0;
+
+    void JoinSession()
+    {
+    //var session = await _sessionService.Get(sessionId);
+        var session = new SessionResult
+        {
+            Id = Guid.NewGuid(),
+            Finished = false,
+            Started = false,
+            JoinId = SessionId
+        };
+        if (session != null)
+            UriHelper.NavigateTo($"/Session/{session.JoinId}");
+    }
+}

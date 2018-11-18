@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace WhatIf.Shared.Services.Session
+{
+    public class SessionResult
+    {
+        public Guid Id { get; set; }
+        public int JoinId { get; set; }
+        public bool Started { get; set; }
+        public bool Finished { get; set; }
+    }
+}
