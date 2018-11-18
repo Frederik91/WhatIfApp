@@ -1,0 +1,125 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appService_WhatIfServer20181118014940_name": {
+      "type": "string"
+    },
+    "appServicePlan_WhatIf_location": {
+      "type": "string"
+    },
+    "appServicePlan_WhatIf_name": {
+      "type": "string"
+    },
+    "appServicePlan_WhatIf_resourceGroup": {
+      "type": "string"
+    },
+    "appInsightsComponentName_WhatIfServer20181118014940_location": {
+      "type": "string"
+    },
+    "appInsightsComponentName_WhatIfServer20181118014940_type": {
+      "type": "string"
+    },
+    "appInsightsComponentName_WhatIfServer20181118014940_hockeyAppToken": {
+      "type": "string"
+    },
+    "appInsightsComponentName_WhatIfServer20181118014940_requestSource": {
+      "type": "string"
+    },
+    "appServicePlan_WhatIf_skuName": {
+      "type": "string"
+    },
+    "appServicePlan_WhatIf_skuTier": {
+      "type": "string"
+    },
+    "appServicePlan_WhatIf_skuFamily": {
+      "type": "string"
+    },
+    "appServicePlan_WhatIf_skuSize": {
+      "type": "string"
+    },
+    "appServicePlan_WhatIf_workerSizeId": {
+      "type": "int"
+    }
+  },
+  "resources": [
+    {
+      "location": "[parameters('appServicePlan_WhatIf_location')]",
+      "name": "[parameters('appService_WhatIfServer20181118014940_name')]",
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2015-08-01",
+      "tags": {
+        "[concat('hidden-related:', resourceId(parameters('appServicePlan_WhatIf_resourceGroup'),'Microsoft.Web/serverfarms', parameters('appServicePlan_WhatIf_name')))]": "empty"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverFarms', parameters('appServicePlan_WhatIf_name'))]"
+      ],
+      "kind": "app",
+      "properties": {
+        "name": "[parameters('appService_WhatIfServer20181118014940_name')]",
+        "serverFarmId": "[resourceId(parameters('appServicePlan_WhatIf_resourceGroup'),'Microsoft.Web/serverfarms', parameters('appServicePlan_WhatIf_name'))]",
+        "kind": "app",
+        "httpsOnly": true
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "Microsoft.ApplicationInsights.AzureWebSites",
+          "type": "siteextensions",
+          "dependsOn": [
+            "[concat('Microsoft.Web/Sites/', parameters('appService_WhatIfServer20181118014940_name'))]"
+          ]
+        },
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[concat('Microsoft.Web/Sites/', parameters('appService_WhatIfServer20181118014940_name'))]",
+            "Microsoft.ApplicationInsights.AzureWebSites"
+          ],
+          "properties": {
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', parameters('appService_WhatIfServer20181118014940_name'))).InstrumentationKey]",
+            "APPINSIGHTS_PROFILERFEATURE_VERSION": "1.0.0",
+            "APPINSIGHTS_SNAPSHOTFEATURE_VERSION": "1.0.0"
+          }
+        }
+      ]
+    },
+    {
+      "location": "[parameters('appInsightsComponentName_WhatIfServer20181118014940_location')]",
+      "name": "[parameters('appService_WhatIfServer20181118014940_name')]",
+      "type": "microsoft.insights/components",
+      "apiVersion": "2014-08-01",
+      "tags": {
+        "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('appService_WhatIfServer20181118014940_name')))]": "Resource"
+      },
+      "properties": {
+        "ApplicationId": "[parameters('appService_WhatIfServer20181118014940_name')]",
+        "Application_Type": "[parameters('appInsightsComponentName_WhatIfServer20181118014940_type')]",
+        "HockeyAppToken": "[parameters('appInsightsComponentName_WhatIfServer20181118014940_hockeyAppToken')]",
+        "HockeyAppId": "[parameters('appInsightsComponentName_WhatIfServer20181118014940_hockeyAppToken')]",
+        "Flow_Type": "Redfield",
+        "RequestSource": "[parameters('appInsightsComponentName_WhatIfServer20181118014940_requestSource')]"
+      }
+    },
+    {
+      "location": "[parameters('appServicePlan_WhatIf_location')]",
+      "name": "[parameters('appServicePlan_WhatIf_name')]",
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2015-08-01",
+      "sku": {
+        "name": "[parameters('appServicePlan_WhatIf_skuName')]",
+        "tier": "[parameters('appServicePlan_WhatIf_skuTier')]",
+        "family": "[parameters('appServicePlan_WhatIf_skuFamily')]",
+        "size": "[parameters('appServicePlan_WhatIf_skuSize')]"
+      },
+      "properties": {
+        "name": "[parameters('appServicePlan_WhatIf_name')]"
+      }
+    }
+  ]
+}

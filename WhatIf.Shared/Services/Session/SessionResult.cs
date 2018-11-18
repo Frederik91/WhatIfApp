@@ -8,6 +8,7 @@ namespace WhatIf.Shared.Services.Session
     {
         public Guid Id { get; set; }
         public int JoinId { get; set; }
+        public string Name { get; set; }
         public bool Started { get; set; }
         public bool Finished { get; set; }
     }

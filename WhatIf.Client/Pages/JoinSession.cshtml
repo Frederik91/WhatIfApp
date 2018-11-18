@@ -1,8 +1,9 @@
 ﻿@page "/session/Join/{SessionId:int}"
 @using WhatIf.Shared.Services.Session
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+@inject ISessionService SessionService
 
-<h1>JoinSession</h1>
+<h1>Join Session @Session.Name</h1>
 
 <p>Enter your nickname</p>
 <input type="text" bind="@Nickname" />
@@ -15,8 +16,16 @@
     [Parameter]
     protected int SessionId { get; set; }
 
+    [Parameter]
+    protected SessionResult Session { get; set; }
+
     void Join()
     {
         UriHelper.NavigateTo($"/Session/{SessionId}");
+    }
+
+    protected override async Task OnInitAsync()
+    {
+        Session = await SessionService.Get(SessionId);
     }
 }

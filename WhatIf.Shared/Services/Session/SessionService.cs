@@ -14,15 +14,11 @@ namespace WhatIf.Shared.Services.Session
             _joinIdGenerator = joinIdGenerator;
         }
 
-        public Task<SessionResult> Get(int joinId)
+        public async Task<SessionResult> Get(int joinId)
         {
-            return Task.FromResult(new SessionResult
-            {
-                Finished = false,
-                Started = false,
-                Id = Guid.NewGuid(),
-                JoinId = joinId
-            });
+            var session = await CreateNew();
+            session.JoinId = joinId;
+            return session;
         }
 
         public Task<SessionResult> CreateNew()
@@ -31,6 +27,7 @@ namespace WhatIf.Shared.Services.Session
             {
                 Finished = false,
                 Started = false,
+                Name = "New Session",
                 Id = Guid.NewGuid(),
                 JoinId = _joinIdGenerator.Generate()
             });
