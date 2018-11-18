@@ -1,0 +1,22 @@
+﻿@page "/session/Join/{SessionId:int}"
+@using WhatIf.Shared.Services.Session
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+
+<h1>JoinSession</h1>
+
+<p>Enter your nickname</p>
+<input type="text" bind="@Nickname" />
+<button class="btn btn-primary" onclick="@Join">Join</button>
+
+@functions {
+    [Parameter]
+    protected string Nickname { get; set; }
+
+    [Parameter]
+    protected int SessionId { get; set; }
+
+    void Join()
+    {
+        UriHelper.NavigateTo($"/Session/{SessionId}");
+    }
+}

@@ -2,27 +2,29 @@
 @using Microsoft.AspNetCore.Http.Extensions
 @using WhatIf.Shared.Services.Session
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+@inject ISessionService SessionService
 
 <h1>Let's play "What if?"!</h1>
 
 <input type="number" bind="@SessionId"/>
-<button onclick="@JoinSession">Join</button>
+<button class="btn btn-primary" onclick="@JoinSession">Join</button>
+
+<button class="btn btn-primary" onclick="@CreateSession">Create</button>
 
 @functions
 {
     public int SessionId { get; set; } = 0;
 
-    void JoinSession()
+    async Task JoinSession()
     {
-    //var session = await _sessionService.Get(sessionId);
-        var session = new SessionResult
-        {
-            Id = Guid.NewGuid(),
-            Finished = false,
-            Started = false,
-            JoinId = SessionId
-        };
+        //var session = await _sessionService.Get(sessionId);
+        var session = await SessionService.Get(SessionId);
         if (session != null)
-            UriHelper.NavigateTo($"/Session/{session.JoinId}");
+            UriHelper.NavigateTo($"/Session/Join/{session.JoinId}");
+    }
+
+    void CreateSession()
+    {
+        UriHelper.NavigateTo($"/Session/Create");
     }
 }

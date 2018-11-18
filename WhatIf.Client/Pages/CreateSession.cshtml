@@ -1,0 +1,31 @@
+﻿@page "/session/Create"
+@using WhatIf.Shared.Services.Session
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+@inject ISessionService SessionService
+
+<h1>JoinSession</h1>
+
+<p>Session name</p>
+<input type="text" bind="@SessionName" />
+
+<p>Enter your nickname</p>
+<input type="text" bind="@Nickname" />
+<button class="btn btn-primary" onclick="@Create">Create</button>
+
+@functions {
+
+    [Parameter]
+    protected string SessionName { get; set; }
+
+    [Parameter]
+    protected string Nickname { get; set; }
+
+    [Parameter]
+    protected int SessionId { get; set; }
+
+    async Task Create()
+    {
+        var session = await SessionService.CreateNew();
+        UriHelper.NavigateTo($"/Session/{session.JoinId}");
+    }
+}
