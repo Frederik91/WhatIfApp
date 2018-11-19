@@ -1,8 +1,10 @@
 ﻿@page "/session/Join/{SessionId:int}"
-@using Microsoft.AspNetCore.Http
+@using Blazor.Extensions.Storage
 @using WhatIf.Shared.Services.Session
+@using WhatIf.Shared.Services.User
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 @inject ISessionService SessionService
+@inject LocalStorage Storage
 
 <div class="container align-items-sm-center">
     <div class="row justify-content-md-center">
@@ -30,11 +32,17 @@
     [Parameter]
     protected SessionResult Session { get; set; }
 
-    void Join()
+    async Task Join()
     {
         if (!string.IsNullOrEmpty(Nickname))
         {
-
+            var user = new UserResult
+            {
+                Id = Guid.NewGuid(),
+                Nickname = Nickname,
+                SessionId = Session.Id
+            };
+            await Storage.SetItem("User", user);
             UriHelper.NavigateTo($"/Session/{SessionId}");
         }
 
