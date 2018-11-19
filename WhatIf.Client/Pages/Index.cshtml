@@ -3,28 +3,42 @@
 @using WhatIf.Shared.Services.Session
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 @inject ISessionService SessionService
+@inject IUserUsecase UserUsecase
 
 <h1>Let's play "What if?"!</h1>
 
-<input type="number" bind="@SessionId"/>
+<input type="number" bind="@SessionId" />
 <button class="btn btn-primary" onclick="@JoinSession">Join</button>
 
 <button class="btn btn-primary" onclick="@CreateSession">Create</button>
 
+<button class="btn btn-primary" onclick="@GetUser">Get a user</button>
+
+@if (!string.IsNullOrWhiteSpace(User))
+{
+    <strong>The Id</strong> @User;
+}
+
 @functions
 {
-    public int SessionId { get; set; } = 0;
+public string User { get; set; }
 
-    async Task JoinSession()
-    {
-        //var session = await _sessionService.Get(sessionId);
-        var session = await SessionService.Get(SessionId);
-        if (session != null)
-            UriHelper.NavigateTo($"/Session/Join/{session.JoinId}");
-    }
+public int SessionId { get; set; } = 0;
 
-    void CreateSession()
-    {
-        UriHelper.NavigateTo($"/Session/Create");
-    }
+async Task JoinSession()
+{
+    //var session = await _sessionService.Get(sessionId);
+    var session = await SessionService.Get(SessionId);
+    if (session != null)
+        UriHelper.NavigateTo($"/Session/Join/{session.JoinId}");
+}
+
+void CreateSession()
+{
+    UriHelper.NavigateTo($"/Session/Create");
+}
+async Task GetUser()
+{
+    User = await UserUsecase.GetUsers();
+}
 }
