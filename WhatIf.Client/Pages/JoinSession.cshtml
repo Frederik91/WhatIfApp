@@ -1,18 +1,24 @@
 ﻿@page "/session/Join/{SessionId:int}"
+@using Microsoft.AspNetCore.Http
 @using WhatIf.Shared.Services.Session
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 @inject ISessionService SessionService
 
-<h1>Join Session: @Session.Name</h1>
-
-<div>
-    <div class="form-group">
-        <label for="inputNickname">Nickname</label>
-        <input type="text" bind="@Nickname" class="form-control" id="inputNickname" placeholder="Nickname"/>
-        <small class="form-text text-muted">This is the name everyone else will see</small>
+<div class="container align-items-sm-center">
+    <div class="row justify-content-md-center">
+        <h1>Bli med i spillet: @Session.Name</h1>
     </div>
-    <button type="submit" onclick="@Join" class="btn btn-primary">Join</button>
+    <div class="row justify-content-md-center">
+        <div class="col">
+            <div class="form-group">
+                <label for="inputNickname">Kallenavn</label>
+                <input type="text" bind="@Nickname" class="form-control" id="inputNickname" placeholder="Nickname" />
+                <button type="submit" onclick="@Join" class="btn btn-primary">Bli med</button>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 @functions {
     [Parameter]
@@ -27,7 +33,11 @@
     void Join()
     {
         if (!string.IsNullOrEmpty(Nickname))
+        {
+
             UriHelper.NavigateTo($"/Session/{SessionId}");
+        }
+
     }
 
     protected override async Task OnInitAsync()
