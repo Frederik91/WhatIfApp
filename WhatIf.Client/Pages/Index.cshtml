@@ -4,37 +4,53 @@
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 @inject ISessionService SessionService
 
-<div class="container d-flex h-100">
-    <div class="row align-self-center w-100">
-        <div class="col-6 mx-auto">
-            <div class="jumbotron">
-                <h1 class="display-4">Let's play "What if?"!</h1>
-                <p class="lead">Join a session</p>
-                <input bind="@SessionId" class="form-control"/>
-                <button class="btn btn-primary" onclick="@JoinSession">Join</button>
-                <p class="lead">
-
-                    <button class="btn btn-primary" onclick="@CreateSession">Create</button>
-                </p>
-            </div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="display-4">Hva skjer hvis?</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p class="lead">Ble med i runde</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5"></div>
+        <div class="col-sm-2">
+            <input bind="@SessionId" class="form-control"/>
+        </div>
+        <div class="col-sm-1">
+            <button class="btn btn-primary" onclick="@JoinSession">Bli med</button>
+        </div>
+        <div class="col-sm-4"></div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p class="lead" style="margin-top: 50px">Eller start en ny</p>
+        </div>
+    </div>
+    <div class="row align-items-end">
+        <div class="col">
+            <button class="btn btn-primary" onclick="@CreateSession">Start ny</button>
         </div>
     </div>
 </div>
 
 @functions
 {
-    public int SessionId { get; set; } = 0;
+public int SessionId { get; set; } = 0;
 
-    async Task JoinSession()
-    {
-        //var session = await _sessionService.Get(sessionId);
-        var session = await SessionService.Get(SessionId);
-        if (session != null)
-            UriHelper.NavigateTo($"/Session/Join/{session.JoinId}");
-    }
+async Task JoinSession()
+{
+    //var session = await _sessionService.Get(sessionId);
+    var session = await SessionService.Get(SessionId);
+    if (session != null)
+        UriHelper.NavigateTo($"/Session/Join/{session.JoinId}");
+}
 
-    void CreateSession()
-    {
-        UriHelper.NavigateTo($"/Session/Create");
-    }
+void CreateSession()
+{
+    UriHelper.NavigateTo($"/Session/Create");
+}
 }
