@@ -8,15 +8,15 @@ namespace WhatIf.Server
 {
     public class UserService : IUserService
     {
-        private readonly IUserQueryHandler userQueryHandler;
+        private readonly IUserQueryHandler _userQueryHandler;
 
         public UserService(IUserQueryHandler userQueryHandler)
         {
-            this.userQueryHandler = userQueryHandler;
+            _userQueryHandler = userQueryHandler;
         }
         public async Task<string> GetUser(int id)
         {
-            return await userQueryHandler.GetUser(id);
+            return await _userQueryHandler.GetUser(id);
         }
     }
 }

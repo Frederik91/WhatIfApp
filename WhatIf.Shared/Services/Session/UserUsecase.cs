@@ -1,27 +1,18 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace WhatIf.Shared.Services.Session
 {
     public class UserUsecase : IUserUsecase
     {
-        private HttpClient httpClient;
-        private string serverApiBaseUrl = "http://localhost:53562/api/";
+        private readonly HttpClient _httpClient;
+        private readonly string _serverApiBaseUrl = "http://localhost:53562/api/";
 
         public UserUsecase()
         {
-            httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(serverApiBaseUrl);
+            _httpClient = new HttpClient { BaseAddress = new Uri(_serverApiBaseUrl) };
         }
 
         public async Task<string> GetUsers()
@@ -34,12 +25,12 @@ namespace WhatIf.Shared.Services.Session
             //var content = response.Content;
             //return content;
             string result = "Default";
-            var response = await httpClient.GetAsync("User/1337");
+            var response = await _httpClient.GetAsync("User/1337");
             if (response.IsSuccessStatusCode)
             {
                 result = await response.Content.ReadAsStringAsync();
             }
-          
+
             return result;
         }
     }

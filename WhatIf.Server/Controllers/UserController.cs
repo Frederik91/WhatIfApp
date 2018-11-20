@@ -11,21 +11,21 @@ namespace WhatIf.Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserService userService;
+        private readonly IUserService _userService;
 
         public UserController(IUserService userService)
         {
-            this.userService = userService;
+            this._userService = userService;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<string>> GetUserById(int id)
         {
-            return await userService.GetUser(id);
+            return await _userService.GetUser(id);
         }
         [HttpGet]
         public async Task<ActionResult<string>> GetAll()
         {
-            return await userService.GetUser(42);
+            return await _userService.GetUser(42);
         }
     }
 }

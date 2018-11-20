@@ -8,15 +8,15 @@ namespace WhatIf.Database
 {
     public class UserQueryHandler : IUserQueryHandler
     {
-        private readonly IDbConnection dbConnection;
+        private readonly IDbConnection _dbConnection;
 
         public UserQueryHandler(IDbConnection dbConnection)
         {
-            this.dbConnection = dbConnection;
+            _dbConnection = dbConnection;
         }
         public async Task<string> GetUser(int id)
         {
-            var user = await dbConnection.QueryFirstAsync<string>("select RoleId from User where UserId = 1337");
+            var user = await _dbConnection.QueryFirstAsync<string>("select RoleId from User where UserId = 1337");
             return user;
         }
     }
