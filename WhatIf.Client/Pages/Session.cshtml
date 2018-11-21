@@ -1,14 +1,9 @@
 ﻿@page "/session/{SessionId:int}"
-@using Blazor.Extensions.Storage
 @using Newtonsoft.Json
 @using WhatIf.Shared.Services.User
-@inject LocalStorage Storage
-
 <h1>Velkommen @User.Nickname</h1>
 
 <p>Du er med i spillet: @SessionId</p>
-
-<button onclick="@Load">Get user</button>
 
 @functions {
     [Parameter]
@@ -18,9 +13,8 @@
     protected UserResult User { get; set; }
 
 
-
-    protected async Task Load()
+    protected override void OnInit()
     {
-        User = await Storage.GetItem<UserResult>("User");
+        User = SessionSettings.User;
     }
 }

@@ -1,4 +1,3 @@
-using Blazor.Extensions.Storage;
 using Microsoft.AspNetCore.Blazor.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using WhatIf.Shared.Services.Session;
@@ -11,7 +10,6 @@ namespace WhatIf.Client
         {
             services.AddSingleton<IJoinIdGenerator, JoinIdGenerator>();
             services.AddSingleton<ISessionService, SessionService>();
-            services.AddStorage();
         }
 
         public void Configure(IBlazorApplicationBuilder app)

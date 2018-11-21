@@ -1,10 +1,8 @@
 ﻿@page "/session/Join/{SessionId:int}"
-@using Blazor.Extensions.Storage
 @using WhatIf.Shared.Services.Session
 @using WhatIf.Shared.Services.User
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 @inject ISessionService SessionService
-@inject LocalStorage Storage
 
 <div class="container align-items-sm-center">
     <div class="row justify-content-md-center">
@@ -14,7 +12,7 @@
         <div class="col">
             <div class="form-group">
                 <label for="inputNickname">Kallenavn</label>
-                <input type="text" bind="@Nickname" class="form-control" id="inputNickname" placeholder="Nickname" />
+                <input type="text" bind="@Nickname" class="form-control" id="inputNickname" placeholder="Kallenavn" />
                 <button type="submit" onclick="@Join" class="btn btn-primary">Bli med</button>
             </div>
         </div>
@@ -34,18 +32,16 @@
 
     async Task Join()
     {
-        if (!string.IsNullOrEmpty(Nickname))
-        {
-            var user = new UserResult
-            {
-                Id = Guid.NewGuid(),
-                Nickname = Nickname,
-                SessionId = Session.Id
-            };
-            await Storage.SetItem("User", user);
-            UriHelper.NavigateTo($"/Session/{SessionId}");
-        }
+        if (string.IsNullOrEmpty(Nickname)) return;
 
+        var user = new UserResult
+        {
+            Id = Guid.NewGuid(),
+            Nickname = Nickname,
+            SessionId = Session.Id
+        };
+        SessionSettings.User = user;
+        UriHelper.NavigateTo($"/Session/{SessionId}");
     }
 
     protected override async Task OnInitAsync()
