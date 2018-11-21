@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using WhatIf.Shared.Services.Session;
 
-namespace WhatIf.Shared.Services.Session
+namespace WhatIf.Server.Services.Session
 {
     public interface ISessionService
     {

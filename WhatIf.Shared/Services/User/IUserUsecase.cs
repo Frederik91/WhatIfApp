@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WhatIf.Shared.Services.Session
+namespace WhatIf.Shared.Services.User
 {
     public interface IUserUsecase
     {
-        Task<string> GetUsers();
+        Task<UserResult> GetUser(Guid sessionId);
+        Task<object> CreateUser(string nickname);
     }
 }

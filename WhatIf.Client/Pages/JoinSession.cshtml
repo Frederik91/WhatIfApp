@@ -2,7 +2,7 @@
 @using WhatIf.Shared.Services.Session
 @using WhatIf.Shared.Services.User
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
-@inject ISessionService SessionService
+@inject ISessionUsecase SessionUsecase
 
 <div class="container align-items-sm-center">
     <div class="row justify-content-md-center">
@@ -46,6 +46,6 @@
 
     protected override async Task OnInitAsync()
     {
-        Session = await SessionService.Get(SessionId);
+        Session = await SessionUsecase.Get(SessionId);
     }
 }

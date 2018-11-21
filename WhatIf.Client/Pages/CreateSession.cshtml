@@ -1,7 +1,9 @@
 ﻿@page "/session/Create"
 @using WhatIf.Shared.Services.Session
+@using WhatIf.Shared.Services.User
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
-@inject ISessionService SessionService
+@inject ISessionUsecase SessionUsecase
+@inject IUserUsecase UserUsecase
 
 <h1>Create new session</h1>
 
@@ -27,12 +29,10 @@
     [Parameter]
     protected string Nickname { get; set; }
 
-    [Parameter]
-    protected int SessionId { get; set; }
-
     async Task Create()
     {
-        var session = await SessionService.CreateNew();
+        var user = await UserUsecase.CreateUser(Nickname);
+        var session = await SessionUsecase.CreateNew(SessionName);
         UriHelper.NavigateTo($"/Session/{session.JoinId}");
     }
 }

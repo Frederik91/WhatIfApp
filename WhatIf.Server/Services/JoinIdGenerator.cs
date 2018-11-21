@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using WhatIf.Shared.Services.Session;
 
-namespace WhatIf.Shared.Services.Session
+namespace WhatIf.Server.Services.Session
 {
     public class JoinIdGenerator : IJoinIdGenerator
     {

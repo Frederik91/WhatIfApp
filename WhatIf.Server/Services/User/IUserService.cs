@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WhatIf.Server
+namespace WhatIf.Server.Services.User
 {
     public interface IUserService
     {

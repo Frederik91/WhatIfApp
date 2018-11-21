@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WhatIf.Database;
 
-namespace WhatIf.Server
+namespace WhatIf.Server.Services.User
 {
     public class UserService : IUserService
     {

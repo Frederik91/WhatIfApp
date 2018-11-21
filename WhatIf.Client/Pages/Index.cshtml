@@ -1,8 +1,9 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Http.Extensions
 @using WhatIf.Shared.Services.Session
+@using WhatIf.Shared.Services.User
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
-@inject ISessionService SessionService
+@inject ISessionUsecase SessionUsecase
 @inject IUserUsecase UserUsecase
 
 <div class="container">
@@ -38,8 +39,6 @@
     </div>
 </div>
 
-<button class="btn btn-primary" onclick="@GetUser">Get a user</button>
-
 @if (!string.IsNullOrWhiteSpace(User))
 {
     <strong>The Id</strong> @User;
@@ -54,7 +53,7 @@ public int SessionId { get; set; } = 0;
 async Task JoinSession()
 {
     //var session = await _sessionService.Get(sessionId);
-    var session = await SessionService.Get(SessionId);
+    var session = await SessionUsecase.Get(SessionId);
     if (session != null)
         UriHelper.NavigateTo($"/Session/Join/{session.JoinId}");
 }
@@ -62,9 +61,5 @@ async Task JoinSession()
 void CreateSession()
 {
     UriHelper.NavigateTo($"/Session/Create");
-}
-async Task GetUser()
-{
-    User = await UserUsecase.GetUsers();
 }
 }
