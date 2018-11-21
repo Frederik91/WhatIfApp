@@ -8,8 +8,10 @@ namespace WhatIf.Client
     {
         public void ConfigureServices(IServiceCollection services)
         {
+           
             services.AddSingleton<IJoinIdGenerator, JoinIdGenerator>();
             services.AddSingleton<ISessionService, SessionService>();
+            services.AddTransient<IUserUsecase, UserUsecase>();
         }
 
         public void Configure(IBlazorApplicationBuilder app)

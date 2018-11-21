@@ -19,7 +19,7 @@ namespace WhatIf.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().AddControllersAsServices();
-
+            services.AddCors();
             services.AddResponseCompression(options =>
             {
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
@@ -28,6 +28,7 @@ namespace WhatIf.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
+            CompositionRoot.Compose(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

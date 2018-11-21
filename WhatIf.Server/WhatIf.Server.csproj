@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WhatIf.Client\WhatIf.Client.csproj" />
+    <ProjectReference Include="..\WhatIf.Database\WhatIf.Database.csproj" />
     <ProjectReference Include="..\WhatIf.Shared\WhatIf.Shared.csproj" />
   </ItemGroup>
 

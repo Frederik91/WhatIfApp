@@ -3,6 +3,7 @@
 @using WhatIf.Shared.Services.Session
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
 @inject ISessionService SessionService
+@inject IUserUsecase UserUsecase
 
 <div class="container">
     <div class="row">
@@ -37,8 +38,17 @@
     </div>
 </div>
 
+<button class="btn btn-primary" onclick="@GetUser">Get a user</button>
+
+@if (!string.IsNullOrWhiteSpace(User))
+{
+    <strong>The Id</strong> @User;
+}
+
 @functions
 {
+public string User { get; set; }
+
 public int SessionId { get; set; } = 0;
 
 async Task JoinSession()
@@ -52,5 +62,9 @@ async Task JoinSession()
 void CreateSession()
 {
     UriHelper.NavigateTo($"/Session/Create");
+}
+async Task GetUser()
+{
+    User = await UserUsecase.GetUsers();
 }
 }
