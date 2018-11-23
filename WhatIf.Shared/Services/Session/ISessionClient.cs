@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 
 namespace WhatIf.Shared.Services.Session
 {
-    public interface ISessionService
+    public interface ISessionClient
     {
         Task<SessionResult> Get(int joinId);
-        Task<SessionResult> CreateNew();
+        Task<SessionResult> CreateNew(string sessionName);
+        Task SetLeader(Guid sessionId, Guid userId);
+        Task StartSession(Guid sessionResultId);
     }
 }

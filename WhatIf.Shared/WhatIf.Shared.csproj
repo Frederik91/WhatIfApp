@@ -5,4 +5,15 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.JSInterop" Version="0.7.0" />
+    <PackageReference Include="RestSharp" Version="106.5.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Blazor.Browser">
+      <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.blazor.browser\0.7.0\lib\netstandard2.0\Microsoft.AspNetCore.Blazor.Browser.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
