@@ -2,10 +2,10 @@
 @using Blazor.Extensions
 @using WhatIf.Shared.Services.Session
 @using WhatIf.Shared.Services.User
+@using System.Linq
 @inject ISessionClient SessionClient
 @inject IUserClient UserClient
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
-@inject HubConnection HubConnection
 
 <div class="container">
     <div class="row">
@@ -71,24 +71,22 @@
         User = SessionSettings.User;
         if (User == null)
         {
-            UriHelper.NavigateTo($"/JoinSession");
+            UriHelper.NavigateTo("/JoinSession");
             return;
         }
 
-        var session = await SessionClient.Get(SessionId);
-        var players = await UserClient.GetUsers(session.Id);
-        var leader = await UserClient.GetUser(session.LeaderId);
-        SessionResult = session;
-        SessionLeader = leader;
-        Players = new List<UserResult>(players);
+        SessionResult = await SessionClient.Get(SessionId);
+        SessionLeader = await UserClient.GetUser(SessionResult.LeaderId);
 
-        HubConnection.On<Guid>("UserJoined", async id => await AddPlayer(id));
+        var connection = new HubConnectionBuilder().WithUrl("/SessionHub").Build();
+        connection.On<Guid>("UserJoined", async id => await UpdatePlayerList());
+        await connection.StartAsync();
+        await connection.InvokeAsync("RegisterUser", new { sessionId = SessionResult.Id, userId = User.Id });
     }
 
-    private async Task AddPlayer(Guid userId)
+    private async Task UpdatePlayerList()
     {
-        var player = await UserClient.GetUser(userId);
-        Players.Add(player);
+        Players = (await UserClient.GetUsers(SessionResult.Id)).ToList();
     }
 
     private bool IsLeader()

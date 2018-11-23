@@ -14,16 +14,6 @@ namespace WhatIf.Client
             services.AddSingleton<ISessionClient, SessionClient>();
             services.AddTransient<IUserClient, UserClient>();
             services.AddTransient<IRestClientWrapper, RestClientWrapper>();
-            var connection = new HubConnectionBuilder()
-                .WithUrl("/SessionHub", 
-                    opt =>
-                    {
-                        opt.LogLevel = SignalRLogLevel.Trace; 
-                        opt.Transport = HttpTransportType.WebSockets; 
-                    })
-                .Build();
-            connection.StartAsync().GetAwaiter().GetResult(); 
-            services.Add(new ServiceDescriptor(typeof(HubConnection), connection));
         }
 
         public void Configure(IBlazorApplicationBuilder app)

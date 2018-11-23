@@ -50,6 +50,11 @@ namespace WhatIf.Server
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseHttpsRedirection();
+                app.UseHsts();
+            }
 
             app.UseMvc(routes =>
             {

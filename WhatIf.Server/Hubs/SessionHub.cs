@@ -10,8 +10,8 @@ namespace WhatIf.Server.Hubs
     {
         public async Task RegisterUser(Guid sessionId, Guid userId)
         {
-            await Clients.Group(sessionId.ToString()).SendAsync("UserJoined", userId);
             await Groups.AddToGroupAsync(Context.ConnectionId, sessionId.ToString());
+            await Clients.Group(sessionId.ToString()).SendAsync("UserJoined", userId);
         }
     }
 }
