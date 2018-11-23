@@ -14,9 +14,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		azure-pipelines.yml = azure-pipelines.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatIf.Database", "WhatIf.Database\WhatIf.Database.csproj", "{E5A94BA6-9271-4361-9CE6-148832C93710}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Database", "WhatIf.Database\WhatIf.Database.csproj", "{E5A94BA6-9271-4361-9CE6-148832C93710}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatIf.Migrations", "WhatIf.Migrations\WhatIf.Migrations.csproj", "{6B42F5A1-1134-4109-9D27-93B486DA8B9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Migrations", "WhatIf.Migrations\WhatIf.Migrations.csproj", "{6B42F5A1-1134-4109-9D27-93B486DA8B9B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A18FF475-669B-485D-BB7D-3DEA78A4B2D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatIf.Server.Tests", "WhatIf.Server.Tests\WhatIf.Server.Tests.csproj", "{8F6F0940-3708-4A27-A554-4DF9B3305D10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,9 +48,16 @@ Global
 		{6B42F5A1-1134-4109-9D27-93B486DA8B9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B42F5A1-1134-4109-9D27-93B486DA8B9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B42F5A1-1134-4109-9D27-93B486DA8B9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F6F0940-3708-4A27-A554-4DF9B3305D10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F6F0940-3708-4A27-A554-4DF9B3305D10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F6F0940-3708-4A27-A554-4DF9B3305D10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F6F0940-3708-4A27-A554-4DF9B3305D10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8F6F0940-3708-4A27-A554-4DF9B3305D10} = {A18FF475-669B-485D-BB7D-3DEA78A4B2D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8B4DA9DA-DECD-444F-B06F-D197857F3B57}

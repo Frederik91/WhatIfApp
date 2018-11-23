@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using WhatIf.Shared.Services.Session;
-using WhatIf.Shared.Services.User;
 
-namespace WhatIf.Server.Services.Session
+namespace WhatIf.Database.Session
 {
-    public interface ISessionService
+    public interface ISessionQueryHandler
     {
+        Task Create(SessionResult session);
         Task<SessionResult> Get(int joinId);
-        Task<SessionResult> CreateNew(CreateSessionRequest request);
         Task SetLeader(SetLeaderRequest request);
     }
 }

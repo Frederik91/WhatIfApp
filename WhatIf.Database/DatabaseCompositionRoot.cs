@@ -7,6 +7,8 @@ using System.Data.SQLite;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using WhatIf.Database.Session;
+using WhatIf.Database.User;
 using WhatIf.Migrations.Migrations.Iteration1;
 
 namespace WhatIf.Database
@@ -19,6 +21,7 @@ namespace WhatIf.Database
         {
             services.AddSingleton<IDbConnection>(CreateSQLiteConnection());
             services.AddTransient<IUserQueryHandler, UserQueryHandler>();
+            services.AddTransient<ISessionQueryHandler, SessionQueryHandler>();
             
             UpdateDatabase(services);
 

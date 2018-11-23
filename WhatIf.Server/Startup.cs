@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using System.Linq;
 using System.Net.Mime;
+using Swashbuckle.AspNetCore.Swagger;
+using WhatIf.Server.Hubs;
 using WhatIf.Shared;
 using WhatIf.Shared.Services.Session;
 
@@ -28,6 +30,14 @@ namespace WhatIf.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "WhatIf API", Version = "v1" });
+            });
+
+            services.AddSignalR();
+
             CompositionRoot.Compose(services);
         }
 
@@ -44,6 +54,18 @@ namespace WhatIf.Server
             app.UseMvc(routes =>
             {
                 routes.MapRoute(name: "default", template: "{controller}/{action}/{id?}");
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "WhatIf API V1");
+            });
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<SessionHub>("/sessionHub");
             });
 
             app.UseBlazor<Client.Startup>();

@@ -1,5 +1,4 @@
-using System;
-using System.Net.Http;
+using Microsoft.AspNet.SignalR.Client;
 using Microsoft.AspNetCore.Blazor.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using WhatIf.Shared;
@@ -10,14 +9,14 @@ namespace WhatIf.Client
 {
     public class Startup
     {
-        private readonly string _serverApiBaseUrl = "http://localhost:53562/api/";
-
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ISessionUsecase, SessionUsecase>();
-            services.AddTransient<IUserUsecase, UserUsecase>();
-            services.AddSingleton(new HttpClient {BaseAddress = new Uri(_serverApiBaseUrl)});
+            services.AddSingleton<ISessionClient, SessionClient>();
+            services.AddTransient<IUserClient, UserClient>();
             services.AddTransient<IRestClientWrapper, RestClientWrapper>();
+            //var hubConnection = new HubConnection("http://localhost:53562/");
+            //hubConnection.Start().GetAwaiter().GetResult();
+            //services.Add(new ServiceDescriptor(typeof(HubConnection), hubConnection));
         }
 
         public void Configure(IBlazorApplicationBuilder app)

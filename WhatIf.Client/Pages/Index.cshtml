@@ -3,8 +3,8 @@
 @using WhatIf.Shared.Services.Session
 @using WhatIf.Shared.Services.User
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
-@inject ISessionUsecase SessionUsecase
-@inject IUserUsecase UserUsecase
+@inject ISessionClient SessionClient
+@inject IUserClient UserClient
 
 <div class="container">
     <div class="row">
@@ -21,6 +21,10 @@
         <div class="col-sm-5"></div>
         <div class="col-sm-2">
             <input bind="@SessionId" class="form-control"/>
+            @if (InvalidSessionId)
+            {
+                <small>Fant ingen runder med id @SessionId.</small>
+            }
         </div>
         <div class="col-sm-1">
             <button class="btn btn-primary" onclick="@JoinSession">Bli med</button>
@@ -46,20 +50,34 @@
 
 @functions
 {
-public string User { get; set; }
+    public string User { get; set; }
 
-public int SessionId { get; set; } = 0;
+    public int SessionId { get; set; } = 0;
 
-async Task JoinSession()
-{
-    //var session = await _sessionService.Get(sessionId);
-    var session = await SessionUsecase.Get(SessionId);
-    if (session != null)
-        UriHelper.NavigateTo($"/Session/Join/{session.JoinId}");
-}
+    public bool InvalidSessionId { get; set; }
 
-void CreateSession()
-{
-    UriHelper.NavigateTo($"/Session/Create");
-}
+    async Task JoinSession()
+    {
+        try
+        {
+            var session = await SessionClient.Get(SessionId);
+            if (session != null)
+            {
+                InvalidSessionId = false;
+                UriHelper.NavigateTo($"/Session/Join/{session.JoinId}");
+            }
+            else
+                InvalidSessionId = true;
+
+        }
+        catch (Exception)
+        {
+            InvalidSessionId = true;
+        }
+    }
+
+    void CreateSession()
+    {
+        UriHelper.NavigateTo($"/Session/Create");
+    }
 }

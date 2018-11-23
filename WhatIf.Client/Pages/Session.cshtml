@@ -1,20 +1,104 @@
 ﻿@page "/session/{SessionId:int}"
-@using Newtonsoft.Json
+@using Microsoft.AspNet.SignalR.Client
+@using WhatIf.Shared.Services.Session
 @using WhatIf.Shared.Services.User
-<h1>Velkommen @User.Nickname</h1>
+@inject ISessionClient SessionClient
+@inject IUserClient UserClient
+@inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
+@*@inject HubConnection HubConnection*@
 
-<p>Du er med i spillet: @SessionId</p>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="display-4">Velkommen til @SessionResult?.Name, @User?.Nickname</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h1>Id: @SessionId</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center">
+            @if (IsLeader())
+            {
+                <button class="btn btn-primary" onclick="@StartSession">Start runden</button>
+            }
+            else
+            {
+                <p class="lead">Venter på at @SessionLeader?.Nickname skal starte runden</p>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h2>Spillere:</h2>
+            <ul style="list-style-type: none; margin-top: 10px">
+                @if (Players != null)
+                {
+                    foreach (var player in Players)
+                    {
+                        <li>@player.Nickname</li>
+                    }
+                }
+                else
+                {
+                    <li>Ingen spillere er med i runden så langt</li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
 
 @functions {
     [Parameter]
     protected int SessionId { get; set; }
 
     [Parameter]
+    protected SessionResult SessionResult { get; set; }
+
+    [Parameter]
+    protected UserResult SessionLeader { get; set; }
+
+    [Parameter]
     protected UserResult User { get; set; }
 
+    [Parameter]
+    protected List<UserResult> Players { get; set; }
 
-    protected override void OnInit()
+    protected override async Task OnInitAsync()
     {
         User = SessionSettings.User;
+        if (User == null)
+        {
+            UriHelper.NavigateTo($"/JoinSession");
+            return;
+        }
+
+        var session = await SessionClient.Get(SessionId);
+        var players = await UserClient.GetUsers(session.Id);
+        var leader = await UserClient.GetUser(session.LeaderId);
+        SessionResult = session;
+        SessionLeader = leader;
+        Players = new List<UserResult>(players);
+
+        //var sessionHubProxy = HubConnection.CreateHubProxy("SessionHub");
+        //sessionHubProxy.On<Guid>("UserJoined", async id => await AddPlayer(id));
+    }
+
+    private async Task AddPlayer(Guid userId)
+    {
+        var player = await UserClient.GetUser(userId);
+        Players.Add(player);
+    }
+
+    private bool IsLeader()
+    {
+        return User?.Id == SessionLeader?.Id;
+    }
+
+    private async Task StartSession()
+    {
+        await SessionClient.StartSession(SessionResult.Id);
     }
 }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.JSInterop;
+using System;
+using System.IO;
+using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace WhatIf.Shared
 {
@@ -21,23 +21,52 @@ namespace WhatIf.Shared
         {
             HttpResponseMessage response = null;
             if (id == Guid.Empty)
-                response = await _httpClient.GetAsync(urlEnding);
-            
+                response = await _httpClient.GetAsync("api/" + urlEnding);
+
             else
-                response = await _httpClient.GetAsync(urlEnding + id);
+                response = await _httpClient.GetAsync("api/" + urlEnding + id);
 
             var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<T>(content);
+            var result = Json.Deserialize<T>(content);
             return result;
         }
 
         public async Task<T> GetAsync<T>(string text, string urlEnding)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(urlEnding + text);
+            var response = await _httpClient.GetAsync("api/" + urlEnding + text);
 
             var content = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<T>(content);
+            var result = Json.Deserialize<T>(content);
             return result;
+        }
+
+        public async Task<T> Post<T>(string urlEnding, object payload)
+        {
+            var myContent = Json.Serialize(payload);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
+            var httpContent = new ByteArrayContent(buffer);
+            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await _httpClient.PostAsync("api/" + urlEnding, httpContent);
+            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Created)
+            {
+                throw new HttpRequestException($"Status code: {response.StatusCode}. Reason: {response.ReasonPhrase}");
+            }
+            var content = await response.Content.ReadAsStringAsync();
+            var result = Json.Deserialize<T>(content);
+            return result;
+        }
+
+        public async Task Put(string urlEnding, object payload)
+        {
+            var myContent = Json.Serialize(payload);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(myContent);
+            var httpContent = new ByteArrayContent(buffer);
+            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await _httpClient.PutAsync("api/" + urlEnding, httpContent);
+            if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Created)
+            {
+                throw new HttpRequestException($"Status code: {response.StatusCode}. Reason: {response.ReasonPhrase}");
+            }
         }
     }
 }

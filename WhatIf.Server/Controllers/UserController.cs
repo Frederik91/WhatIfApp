@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using WhatIf.Server.Services.User;
+using WhatIf.Shared.Services.User;
 
 namespace WhatIf.Server.Controllers
 {
@@ -16,17 +14,37 @@ namespace WhatIf.Server.Controllers
 
         public UserController(IUserService userService)
         {
-            this._userService = userService;
+            _userService = userService;
         }
+
+        [HttpGet("Session/{sessionId}")]
+        public async Task<IActionResult> GetUsersInSession(Guid sessionId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userService.GetUsersInSession(sessionId);
+            return Ok(user);
+        }
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<string>> GetUserById(int id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            return await _userService.GetUser(id);
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userService.GetUser(id);
+            return Ok(user);
         }
-        [HttpGet]
-        public async Task<ActionResult<string>> GetAll()
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateUserRequest request)
         {
-            return await _userService.GetUser(42);
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userService.CreateUser(request);
+            return Ok(user);
         }
     }
 }
