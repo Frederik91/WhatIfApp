@@ -1,4 +1,4 @@
-using Microsoft.AspNet.SignalR.Client;
+using Blazor.Extensions;
 using Microsoft.AspNetCore.Blazor.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using WhatIf.Shared;
@@ -14,9 +14,16 @@ namespace WhatIf.Client
             services.AddSingleton<ISessionClient, SessionClient>();
             services.AddTransient<IUserClient, UserClient>();
             services.AddTransient<IRestClientWrapper, RestClientWrapper>();
-            //var hubConnection = new HubConnection("http://localhost:53562/");
-            //hubConnection.Start().GetAwaiter().GetResult();
-            //services.Add(new ServiceDescriptor(typeof(HubConnection), hubConnection));
+            var connection = new HubConnectionBuilder()
+                .WithUrl("/SessionHub", 
+                    opt =>
+                    {
+                        opt.LogLevel = SignalRLogLevel.Trace; 
+                        opt.Transport = HttpTransportType.WebSockets; 
+                    })
+                .Build();
+            connection.StartAsync().GetAwaiter().GetResult(); 
+            services.Add(new ServiceDescriptor(typeof(HubConnection), connection));
         }
 
         public void Configure(IBlazorApplicationBuilder app)

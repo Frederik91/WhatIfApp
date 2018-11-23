@@ -65,7 +65,7 @@ namespace WhatIf.Server
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<SessionHub>("/sessionHub");
+                routes.MapHub<SessionHub>("/SessionHub");
             });
 
             app.UseBlazor<Client.Startup>();

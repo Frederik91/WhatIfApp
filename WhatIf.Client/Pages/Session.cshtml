@@ -1,11 +1,11 @@
 ﻿@page "/session/{SessionId:int}"
-@using Microsoft.AspNet.SignalR.Client
+@using Blazor.Extensions
 @using WhatIf.Shared.Services.Session
 @using WhatIf.Shared.Services.User
 @inject ISessionClient SessionClient
 @inject IUserClient UserClient
 @inject Microsoft.AspNetCore.Blazor.Services.IUriHelper UriHelper
-@*@inject HubConnection HubConnection*@
+@inject HubConnection HubConnection
 
 <div class="container">
     <div class="row">
@@ -82,8 +82,7 @@
         SessionLeader = leader;
         Players = new List<UserResult>(players);
 
-        //var sessionHubProxy = HubConnection.CreateHubProxy("SessionHub");
-        //sessionHubProxy.On<Guid>("UserJoined", async id => await AddPlayer(id));
+        HubConnection.On<Guid>("UserJoined", async id => await AddPlayer(id));
     }
 
     private async Task AddPlayer(Guid userId)
