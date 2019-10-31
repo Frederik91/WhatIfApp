@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>c8724a5a-ac56-41ea-98a0-e370c2f2d2c9</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Collection.EntityFrameworkCore" Version="1.0.1" />
+    <PackageReference Include="BlazorSignalR" Version="0.4.0" />
+    <PackageReference Include="LightInject" Version="6.2.0" />
+    <PackageReference Include="LightInject.Microsoft.Hosting" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WhatIf.Core\WhatIf.Core.csproj" />
+    <ProjectReference Include="..\WhatIf.Database\WhatIf.Database.csproj" />
+  </ItemGroup>
+
+</Project>
