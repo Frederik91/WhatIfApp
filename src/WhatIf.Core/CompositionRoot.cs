@@ -1,6 +1,6 @@
 ﻿using System;
 using LightInject;
-using WhatIf.Core.Services.Sessions;
+using WhatIf.Core.Helpers;
 
 namespace WhatIf.Core
 {
@@ -8,7 +8,7 @@ namespace WhatIf.Core
     {
         public void Compose(IServiceRegistry serviceRegistry)
         {
-            serviceRegistry.Register<ISessionService, SessionService>();
+            serviceRegistry.Register<ISessionIdGenerator, SessionIdGenerator>();
         }
     }
 }

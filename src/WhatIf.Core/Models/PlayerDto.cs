@@ -4,7 +4,9 @@ using System.Text;
 
 namespace WhatIf.Core.Models
 {
-    class PlayerDto
+    public class PlayerDto
     {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
     }
 }

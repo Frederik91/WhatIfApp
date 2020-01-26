@@ -1,5 +1,42 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Http.Extensions
+@using WhatIf.Core.Services
 
-<h1>Hello, world!</h1>
+@inject IPlayerService PlayerService
+@inject ISessionService SessionService
+@inject NavigationManager NavigationManager
 
-Welcome to your new app.
+
+<h1>Join session</h1>
+
+<p><MatTextField @bind-Value="@name" Label="Nickname"></MatTextField></p>
+<p><MatTextField @bind-Value="@sessionNumber" Label="Game id"></MatTextField></p>
+
+@if (_sessionNotFound)
+{
+    <p>Session not found</p>
+}
+
+
+<MatButton OnClick="@Join">Join</MatButton>
+
+@code {
+    private int sessionNumber = 0;
+    private string name = string.Empty;
+    private bool _sessionNotFound;
+
+    private async Task Join()
+    {
+        _sessionNotFound = false;
+        var session = await SessionService.Get(sessionNumber);
+        if (session is null)
+        {
+            _sessionNotFound = true;
+            return;
+        }
+
+        var player = await PlayerService.Create(name, session.Id);
+
+        NavigationManager.NavigateTo($"sessionlobby/{session.Id}/{player.Id}");
+    }
+}

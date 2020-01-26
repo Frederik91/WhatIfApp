@@ -1,23 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <UserSecretsId>c8724a5a-ac56-41ea-98a0-e370c2f2d2c9</UserSecretsId>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>3ab60e1d-82c2-4131-ac6e-27ca4d8cab97</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <ApplicationInsightsResourceId>/subscriptions/2d2aed74-a910-4629-8ec5-8ca6ea7136ea/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/WhatIf.Web</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper.Collection.EntityFrameworkCore" Version="1.0.1" />
-    <PackageReference Include="BlazorSignalR" Version="0.4.0" />
-    <PackageReference Include="LightInject" Version="6.2.0" />
-    <PackageReference Include="LightInject.Microsoft.Hosting" Version="1.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+    <PackageReference Include="LightInject.Microsoft.AspNetCore.Hosting" Version="2.2.1" />
+    <PackageReference Include="MatBlazor" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.0" />
+    <PackageReference Include="Microsoft.Azure.SignalR" Version="1.2.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WhatIf.Core\WhatIf.Core.csproj" />
     <ProjectReference Include="..\WhatIf.Database\WhatIf.Database.csproj" />
+    <ProjectReference Include="..\WhatIf.Web.Library\WhatIf.Web.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>

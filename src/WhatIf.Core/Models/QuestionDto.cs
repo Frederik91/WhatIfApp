@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WhatIf.Core.Models
 {
-    class QuestionDto
+    public class QuestionDto
     {
     }
 }

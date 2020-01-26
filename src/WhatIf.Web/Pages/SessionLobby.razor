@@ -1,0 +1,46 @@
+﻿@page "/sessionlobby/{SessionId:guid}/{PlayerId:guid}"
+@using System.Reflection.Metadata
+@using WhatIf.Core.Models
+@using WhatIf.Core.Services
+
+@inject NavigationManager NavigationManager
+@inject IPlayerService PlayerService
+@inject ISessionService SessionService
+
+
+@if (_player is null || _session is null)
+{
+    <h1>Loading...</h1>
+}
+else
+{
+    <h1>Game @_session.Number</h1>
+    <h2>Welcome @_player.Name. Waiting for @_session.Name to start</h2>
+}
+
+
+
+@code{
+
+    [Parameter]
+    public Guid SessionId { get; set; }
+
+    [Parameter]
+    public Guid PlayerId { get; set; }
+
+    private SessionDto _session;
+    private PlayerDto _player;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _session = await SessionService.Get(SessionId);
+        _player = await PlayerService.Get(PlayerId);
+        if (_session is null || _player is null)
+        {
+            NavigationManager.NavigateTo("error");
+            return;
+        }
+
+
+    }
+}

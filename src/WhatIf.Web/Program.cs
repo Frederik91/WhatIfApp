@@ -1,9 +1,15 @@
-using AutoMapper;
-using AutoMapper.EquivalencyExpression;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using LightInject.Microsoft.AspNetCore.Hosting;
 using LightInject.Microsoft.DependencyInjection;
-using WhatIf.Database;
 
 namespace WhatIf.Web
 {
@@ -16,11 +22,11 @@ namespace WhatIf.Web
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseLightInject()
-                .UseServiceProviderFactory(new LightInjectServiceProviderFactory())
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+            .UseServiceProviderFactory(new LightInjectServiceProviderFactory(new LightInject.ContainerOptions { EnablePropertyInjection = false }))
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseLightInject();
+                webBuilder.UseStartup<Startup>();
+            });
     }
 }

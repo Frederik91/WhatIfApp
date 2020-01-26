@@ -1,17 +1,10 @@
-using System.Reflection;
-using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WhatIf.Database;
-using WhatIf.Web.Data;
-using AutoMapper.EntityFrameworkCore;
-using AutoMapper.EquivalencyExpression;
-using System;
 using LightInject;
-using WhatIf.Web.Hubs;
 
 namespace WhatIf.Web
 {
@@ -30,20 +23,14 @@ namespace WhatIf.Web
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddDbContext<WhatIfDbContext>();
-            services.AddSingleton<WeatherForecastService>();
-            services.AddSingleton<IMapper>(new Mapper(new MapperConfiguration(y =>
-            {
-                y.AddCollectionMappers();
-                y.UseEntityFrameworkCoreModel<WhatIfDbContext>(services);
-            })));
+            // services.AddApplicationInsightsTelemetry();
         }
 
         public void ConfigureContainer(IServiceContainer container)
         {
+            container.RegisterInstance(Configuration);
             container.RegisterFrom<CompositionRoot>();
         }
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -67,7 +54,6 @@ namespace WhatIf.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
-                endpoints.MapHub<WhatIfHub>("/whatifhub");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }

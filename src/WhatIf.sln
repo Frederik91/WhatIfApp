@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Web", "WhatIf.Web\WhatIf.Web.csproj", "{30512B4E-4819-418F-A725-984352A29B8E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Core", "WhatIf.Core\WhatIf.Core.csproj", "{558CBB00-0451-4676-9350-92764FB345CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Database", "WhatIf.Database\WhatIf.Database.csproj", "{2FD269B9-3268-4C58-8DC7-6807D4877053}"
@@ -15,16 +13,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8F7EF5D0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Core.Tests", "WhatIf.Core.Tests\WhatIf.Core.Tests.csproj", "{F82F4784-40BD-435D-8558-D2B6BE42BDF8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Web", "WhatIf.Web\WhatIf.Web.csproj", "{646F479C-22B6-4435-BF38-737E016C04FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatIf.Web.Library", "WhatIf.Web.Library\WhatIf.Web.Library.csproj", "{0B875902-0A9E-4DDA-8CFE-8C48894F6F0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{30512B4E-4819-418F-A725-984352A29B8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{30512B4E-4819-418F-A725-984352A29B8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{30512B4E-4819-418F-A725-984352A29B8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{30512B4E-4819-418F-A725-984352A29B8E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{558CBB00-0451-4676-9350-92764FB345CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{558CBB00-0451-4676-9350-92764FB345CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{558CBB00-0451-4676-9350-92764FB345CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,6 +39,14 @@ Global
 		{F82F4784-40BD-435D-8558-D2B6BE42BDF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F82F4784-40BD-435D-8558-D2B6BE42BDF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F82F4784-40BD-435D-8558-D2B6BE42BDF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{646F479C-22B6-4435-BF38-737E016C04FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{646F479C-22B6-4435-BF38-737E016C04FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{646F479C-22B6-4435-BF38-737E016C04FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{646F479C-22B6-4435-BF38-737E016C04FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B875902-0A9E-4DDA-8CFE-8C48894F6F0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B875902-0A9E-4DDA-8CFE-8C48894F6F0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B875902-0A9E-4DDA-8CFE-8C48894F6F0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B875902-0A9E-4DDA-8CFE-8C48894F6F0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
