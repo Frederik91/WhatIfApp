@@ -14,7 +14,7 @@
 @if (_isCreating)
 {
     <h3 class="mat-subtitle1">Creating game: @name</h3>
-    <MatProgressBar Progress="0.6"></MatProgressBar>
+    <MatProgressBar Progress="@Progress"></MatProgressBar>
 }
 else
 {
@@ -35,7 +35,7 @@ else
     public bool IsCreating
     {
         get => _isCreating;
-        set { _isCreating = value; StateHasChanged();}
+        set { _isCreating = value; StateHasChanged(); }
     }
 
     public double Progress
