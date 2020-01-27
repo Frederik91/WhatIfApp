@@ -21,9 +21,9 @@ namespace WhatIf.Database.Services.Players
             _queryExecutor = queryExecutor;
         }
 
-        public async Task<PlayerDto> Create(string name, Guid sessionId)
+        public async Task<PlayerDto> Create(string name, Guid sessionId, bool isGameMaster)
         {
-            var playerTbl = await _queryExecutor.ExecuteAsync(new CreatePlayerQuery { Name = name, SessionId = sessionId });
+            var playerTbl = await _queryExecutor.ExecuteAsync(new CreatePlayerQuery { Name = name, SessionId = sessionId, IsGameMaster = isGameMaster });
             return _mapper.Map<PlayerDto>(playerTbl);
         }
 

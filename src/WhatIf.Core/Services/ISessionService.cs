@@ -8,7 +8,7 @@ namespace WhatIf.Core.Services
     {
         Task<SessionDto> Get(int number);
         Task<SessionDto> Create(string name);
-        Task SetGameMaster(Guid sessionId, Guid playerId);
         Task<SessionDto> Get(Guid sessionId);
+        Task Start(Guid sessionId, int cardAmount);
     }
 }

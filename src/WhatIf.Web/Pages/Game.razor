@@ -1,0 +1,97 @@
+﻿@page "/game"
+@using System.Reflection.Metadata
+@using Microsoft.AspNetCore.Http.Connections
+@using Microsoft.AspNetCore.SignalR.Client
+@using WhatIf.Core.Models
+@using WhatIf.Core.Services
+@using WhatIf.Web.Helpers
+@using WhatIf.Web.Models
+
+@inject NavigationManager NavigationManager
+@inject IPlayerService PlayerService
+@inject ISessionService SessionService
+@inject ISignalRConnectionBuilder SignalRConnectionBuilder
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+@implements IAsyncDisposable
+
+@if (_player is null || _session is null)
+{
+    <h3 class="mat-subtitle1">Loading game</h3>
+    <MatProgressBar Indeterminate="true"></MatProgressBar>
+}
+else
+{
+    <h1>Welcome to @_session.Name!</h1>
+}
+
+
+
+@code{
+    private readonly List<PlayerDto> _players = new List<PlayerDto>();
+
+    private SessionDto _session;
+    private PlayerDto _player;
+    private HubConnection _connection;
+    private bool _isLoading;
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set { _isLoading = value; StateHasChanged(); }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
+            var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
+            _player = await PlayerService.Get(state.PlayerId);
+            _session = await SessionService.Get(state.SessionId);
+            if (_session is null || _player is null)
+            {
+                NavigationManager.NavigateTo("error");
+                return;
+            }
+
+            var playersInSession = await PlayerService.GetPlayersInSession(_session.Id);
+
+            _players.AddRange(playersInSession);
+            await ConnectToSignalRHub(_session.Id, _player.Id);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async void NavigationManagerOnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        await _connection.InvokeAsync("LeaveGame", _session.Id, _player.Id);
+    }
+
+    private async Task ConnectToSignalRHub(Guid sessionId, Guid playerId)
+    {
+        _connection = SignalRConnectionBuilder.Build();
+
+        _connection.On<Guid>("PlayerJoined", HandlePlayerJoined);
+        await _connection.StartAsync();
+
+        await _connection.InvokeAsync("JoinGame", sessionId, playerId); // Invoke a method on the server called "ServerMethod" and pass parameters to it.
+    }
+
+    private async Task HandlePlayerJoined(Guid playerId)
+    {
+        var player = await PlayerService.Get(playerId);
+        _players.Add(player);
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        NavigationManager.LocationChanged -= NavigationManagerOnLocationChanged;
+        await _connection.DisposeAsync();
+    }
+}

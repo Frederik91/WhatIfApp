@@ -20,7 +20,7 @@ namespace WhatIf.Database.Services.Players
 
         public async Task<PlayerTbl> HandleAsync(CreatePlayerQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var player = _dbContext.Players.Add(new PlayerTbl { Name = query.Name, SessionId = query.SessionId });
+            var player = _dbContext.Players.Add(new PlayerTbl { Name = query.Name, SessionId = query.SessionId, IsGameMaster = query.IsGameMaster});
             await _dbContext.SaveChangesAsync(cancellationToken);
             return player.Entity;
         }

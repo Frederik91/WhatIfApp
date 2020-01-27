@@ -67,7 +67,7 @@
             return;
         }
 
-        var player = await PlayerService.Create(_name, session.Id);
+        var player = await PlayerService.Create(_name, session.Id, false);
 
         var playerSessionState = new SessionPlayerState { SessionId = session.Id, PlayerId = player.Id, IsGameMaster = true };
         await ProtectedSessionStore.SetAsync("state", playerSessionState);

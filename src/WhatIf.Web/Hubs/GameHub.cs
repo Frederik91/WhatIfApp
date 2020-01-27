@@ -19,5 +19,20 @@ namespace WhatIf.Web.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId.ToString(), CancellationToken.None);
             await Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("PlayerLeft", playerId);
         }
+
+        public async Task NotifySessionStarting(Guid gameId)
+        {
+            await Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("SessionStarting");
+        }
+
+        public async Task NotifySessionStarted(Guid gameId)
+        {
+            await Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("SessionStarted");
+        }
+
+        public async Task NotifyCardAmountChanged(Guid gameId, int cardAmount)
+        {
+            await Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("CardAmountChanged", cardAmount);
+        }
     }
 }

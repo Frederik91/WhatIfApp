@@ -15,8 +15,6 @@ namespace WhatIf.Database
         public DbSet<PlayerTbl> Players { get; set; }
         public DbSet<QuestionTbl> Questions { get; set; }
         public DbSet<AnswerTbl> Answers { get; set; }
-        public DbSet<GameMasterTbl> GameMasters { get; set; }
-
         public WhatIfDbContext(IConfiguration configuration)
         {
             _configuration = configuration;

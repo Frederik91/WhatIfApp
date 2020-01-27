@@ -8,7 +8,7 @@ namespace WhatIf.Core.Services
 {
     public interface IPlayerService
     {
-        Task<PlayerDto> Create(string name, Guid sessionId);
+        Task<PlayerDto> Create(string name, Guid sessionId, bool isGameMaster);
         Task<PlayerDto> Get(Guid playerId);
         Task<List<PlayerDto>> GetPlayersInSession(Guid sessionId);
     }

@@ -55,10 +55,8 @@ else
             if (session is null)
                 return;
 
-            var player = await PlayerService.Create(name, session.Id);
-            Progress = 0.4;
-            await SessionService.SetGameMaster(session.Id, player.Id);
-            Progress = 0.7;
+            var player = await PlayerService.Create(name, session.Id, true);
+            Progress = 0.5;
 
             var playerSessionState = new SessionPlayerState { SessionId = session.Id, PlayerId = player.Id, IsGameMaster = true };
             await ProtectedSessionStore.SetAsync("state", playerSessionState);

@@ -22,7 +22,7 @@ namespace WhatIf.Database.Services.Sessions
 
         public async Task<SessionTbl> HandleAsync(CreateSessionQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var session = _dbContext.Add(new SessionTbl { Name = query.Name, Number = _sessionIdGenerator.Generate() });
+            var session = _dbContext.Add(new SessionTbl { Name = query.Name, Number = _sessionIdGenerator.Generate(), CardAmount = 3 });
             await _dbContext.SaveChangesAsync(cancellationToken);
             return session.Entity;
         }

@@ -12,5 +12,6 @@ namespace WhatIf.Core.Models
         public DateTimeOffset StartTime { get; set; }
         public bool IsFinished { get; set; }
         public string Name { get; set; }
+        public int CardAmount { get; set; }
     }
 }

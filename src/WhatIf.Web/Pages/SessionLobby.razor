@@ -22,17 +22,51 @@
 }
 else
 {
-    <h1>Game @_session.Number</h1>
-    <h2>Welcome @_player.Name. Waiting for @_session.Name to start</h2>
+    @if (IsStarting)
+    {
+        <h3 class="mat-subtitle1">Game is starting</h3>
+        <MatProgressBar Indeterminate="true"></MatProgressBar>
+    }
+    else
+    {
+        <h1>Game @_session.Number</h1>
+        <h2>Welcome @_player.Name. Waiting for @_session.Name to start</h2>
 
-    <MatList>
-        @foreach (var player in _players)
+        @if (_player.IsGameMaster)
         {
-            <MatListItem>
-                @player.Name
-            </MatListItem>
+            <MatButton OnClick="@Start">Start</MatButton>
+            <p>
+                <MatNumericUpDownField Label="Card amount"
+                                       @bind-Value=@CardAmount
+                                       DecimalPlaces=0
+                                       Minimum=1 Maximum=10>
+                </MatNumericUpDownField>
+            </p>
         }
-    </MatList>
+        else
+        {
+            <h6 class="mat-h6">Card amount: @CardAmount</h6>
+        }
+
+        <h4>Players in lobby</h4>
+        <MatList>
+            @foreach (var player in _players)
+            {
+                <MatListItem>
+                    @if (player.IsGameMaster)
+                    {
+                        <MatH6 style="font-weight: bold">@player.Name (Game master)</MatH6>
+                    }
+                    else
+                    {
+                        <MatH6>@player.Name</MatH6>
+                    }
+
+                </MatListItem>
+            }
+        </MatList>
+    }
+
 }
 
 
@@ -45,6 +79,9 @@ else
     private HubConnection _connection;
     private bool _isLoading;
     private double _progress;
+    private bool _isStarting;
+    private int _cardAmount;
+    private bool _disableCardAmountNotification;
 
     public bool IsLoading
     {
@@ -58,6 +95,28 @@ else
         set { _progress = value; StateHasChanged(); }
     }
 
+    public bool IsStarting
+    {
+        get => _isStarting;
+        set { _isStarting = value; StateHasChanged(); }
+    }
+
+    public int CardAmount
+    {
+        get => _cardAmount;
+        set { _cardAmount = value; if (!_disableCardAmountNotification) HandleCardAmountChanged(); StateHasChanged(); }
+    }
+
+    public async Task Start()
+    {
+        IsStarting = true;
+        await _connection.SendAsync("NotifySessionStarting", _session.Id);
+        await SessionService.Start(_session.Id, CardAmount);
+        await _connection.SendAsync("NotifySessionStarted", _session.Id);
+        IsStarting = false;
+        NavigationManager.NavigateTo("game");
+    }
+
     protected override async Task OnInitializedAsync()
     {
         IsLoading = true;
@@ -68,16 +127,17 @@ else
             var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
             Progress = 0.2;
             _player = await PlayerService.Get(state.PlayerId);
-            Progress = 0.5;
+            Progress = 0.4;
             _session = await SessionService.Get(state.SessionId);
-            Progress = 0.8;
+            Progress = 0.6;
             if (_session is null || _player is null)
             {
                 NavigationManager.NavigateTo("error");
                 return;
             }
-
+            SetCardAmountWithoutNotification(_session.CardAmount);
             var playersInSession = await PlayerService.GetPlayersInSession(_session.Id);
+            Progress = 0.8;
 
             _players.AddRange(playersInSession);
             await ConnectToSignalRHub(_session.Id, _player.Id);
@@ -89,6 +149,12 @@ else
 
     }
 
+    private async void HandleCardAmountChanged()
+    {
+        if (_connection != null)
+            await _connection.SendAsync("NotifyCardAmountChanged", _session.Id, CardAmount);
+    }
+
     private async void NavigationManagerOnLocationChanged(object sender, LocationChangedEventArgs e)
     {
         await _connection.InvokeAsync("LeaveGame", _session.Id, _player.Id);
@@ -98,14 +164,35 @@ else
     {
         _connection = SignalRConnectionBuilder.Build();
 
-        _connection.On<Guid>("PlayerJoined", HandlePlayerJoined);
-        _connection.On<Guid>("PlayerLeft", HandlePlayerLeft);
+        _connection.On<Guid>("PlayerJoined", OnPlayerJoined);
+        _connection.On<Guid>("PlayerLeft", OnPlayerLeft);
+        _connection.On("SessionStarting", OnSessionStarting);
+        _connection.On("SessionStarted", OnSessionStarted);
+        _connection.On<int>("CardAmountChanged", SetCardAmountWithoutNotification);
         await _connection.StartAsync();
 
         await _connection.InvokeAsync("JoinGame", sessionId, playerId); // Invoke a method on the server called "ServerMethod" and pass parameters to it.
     }
 
-    private void HandlePlayerLeft(Guid playerId)
+    private void SetCardAmountWithoutNotification(int cardAmount)
+    {
+        _disableCardAmountNotification = true;
+        CardAmount = cardAmount;
+        _disableCardAmountNotification = false;
+    }
+
+    private void OnSessionStarting()
+    {
+        IsStarting = true;
+    }
+
+    private void OnSessionStarted()
+    {
+        IsStarting = false;
+        NavigationManager.NavigateTo("game");
+    }
+
+    private void OnPlayerLeft(Guid playerId)
     {
         var player = _players.FirstOrDefault(x => x.Id == playerId);
         if (player is null)
@@ -115,7 +202,7 @@ else
         StateHasChanged();
     }
 
-    private async Task HandlePlayerJoined(Guid playerId)
+    private async Task OnPlayerJoined(Guid playerId)
     {
         var player = await PlayerService.Get(playerId);
         _players.Add(player);

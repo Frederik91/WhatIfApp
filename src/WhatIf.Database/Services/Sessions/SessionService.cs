@@ -27,6 +27,11 @@ namespace WhatIf.Database.Services.Sessions
             return sessionTbl is null ? null : _mapper.Map<SessionDto>(sessionTbl);
         }
 
+        public async Task Start(Guid sessionId, int cardAmount)
+        {
+            await _commandExecutor.ExecuteAsync(new StartSessionCommand { SessionId = sessionId, CardAmount = cardAmount });
+        }
+
         public async Task<SessionDto> Get(int number)
         {
             var sessionTbl = await _queryExecutor.ExecuteAsync(new SessionByNumberQuery { Number = number });
@@ -37,11 +42,6 @@ namespace WhatIf.Database.Services.Sessions
         {
             var sessionTbl = await _queryExecutor.ExecuteAsync(new CreateSessionQuery { Name = name });
             return _mapper.Map<SessionDto>(sessionTbl);
-        }
-
-        public async Task SetGameMaster(Guid sessionId, Guid playerId)
-        {
-            await _commandExecutor.ExecuteAsync(new SetGameMasterCommand { SessionId = sessionId, PlayerId = playerId });
         }
     }
 }
