@@ -11,13 +11,6 @@ namespace WhatIf.Web.Helpers
 {
     public class SignalRConnectionBuilder : ISignalRConnectionBuilder
     {
-        private readonly IConfiguration _configuration;
-
-        public SignalRConnectionBuilder(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         public HubConnection Build(string baseUri)
         {
             var uri = new Uri(baseUri + "game");
