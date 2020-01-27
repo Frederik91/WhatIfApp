@@ -24,7 +24,11 @@ namespace WhatIf.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSignalR();
+            services.AddSignalR().AddAzureSignalR(options =>
+            {
+                options.ServerStickyMode =
+                    Microsoft.Azure.SignalR.ServerStickyMode.Required;
+            });
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
