@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WhatIf.Database;
 using LightInject;
+using Microsoft.AspNetCore.SignalR.Client;
+using WhatIf.Web.Hubs;
 
 namespace WhatIf.Web
 {
@@ -21,10 +23,15 @@ namespace WhatIf.Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+            services.AddSignalR();
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddProtectedBrowserStorage();
             // services.AddApplicationInsightsTelemetry();
         }
+
 
         public void ConfigureContainer(IServiceContainer container)
         {
@@ -46,14 +53,18 @@ namespace WhatIf.Web
                 app.UseHsts();
             }
 
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseFileServer();
 
             app.UseRouting();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
+                endpoints.MapHub<GameHub>("/game");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }

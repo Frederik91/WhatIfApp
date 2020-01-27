@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Core.Tests", "WhatIf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Web", "WhatIf.Web\WhatIf.Web.csproj", "{646F479C-22B6-4435-BF38-737E016C04FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WhatIf.Web.Library", "WhatIf.Web.Library\WhatIf.Web.Library.csproj", "{0B875902-0A9E-4DDA-8CFE-8C48894F6F0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WhatIf.Web.Library", "WhatIf.Web.Library\WhatIf.Web.Library.csproj", "{0B875902-0A9E-4DDA-8CFE-8C48894F6F0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

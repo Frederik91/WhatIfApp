@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WhatIf.Web.Helpers;
 
 namespace WhatIf.Web
 {
@@ -12,6 +13,7 @@ namespace WhatIf.Web
         {
             serviceRegistry.RegisterFrom<Core.CompositionRoot>();
             serviceRegistry.RegisterFrom<Database.CompositionRoot>();
+            serviceRegistry.Register<ISignalRConnectionBuilder, SignalRConnectionBuilder>();
         }
     }
 }

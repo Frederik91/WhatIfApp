@@ -1,16 +1,26 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.IdentityModel.Tokens
+@using WhatIf.Core.Models
 @using WhatIf.Core.Services
+@using WhatIf.Web.Models
 
 @inject IPlayerService PlayerService
 @inject ISessionService SessionService
 @inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 
 <h1>Join session</h1>
 
-<p><MatTextField @bind-Value="@name" Label="Nickname"></MatTextField></p>
-<p><MatTextField @bind-Value="@sessionNumber" Label="Game id"></MatTextField></p>
+@if (_existingSession != null)
+{
+    <p>You are already on a game, click here to rejoin</p>
+    <MatButton OnClick="@Rejoin">Rejoin</MatButton>
+}
+<p></p>
+<p><MatTextField @bind-Value="@_name" Label="Nickname"></MatTextField></p>
+<p><MatTextField @bind-Value="@_sessionNumber" Label="Game id"></MatTextField></p>
 
 @if (_sessionNotFound)
 {
@@ -21,22 +31,48 @@
 <MatButton OnClick="@Join">Join</MatButton>
 
 @code {
-    private int sessionNumber = 0;
-    private string name = string.Empty;
+    private int _sessionNumber = 0;
+    private string _name = string.Empty;
     private bool _sessionNotFound;
+    private SessionDto _existingSession;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
+        if (state is null)
+            return;
+
+        var session = await SessionService.Get(state.SessionId);
+        if (!session.IsFinished)
+        {
+            _existingSession = session;
+            StateHasChanged();
+        }
+        
+    }
+
+
+    private void Rejoin()
+    {
+        NavigationManager.NavigateTo($"sessionlobby");
+    }
 
     private async Task Join()
     {
         _sessionNotFound = false;
-        var session = await SessionService.Get(sessionNumber);
+        var session = await SessionService.Get(_sessionNumber);
         if (session is null)
         {
             _sessionNotFound = true;
             return;
         }
 
-        var player = await PlayerService.Create(name, session.Id);
+        var player = await PlayerService.Create(_name, session.Id);
 
-        NavigationManager.NavigateTo($"sessionlobby/{session.Id}/{player.Id}");
+        var playerSessionState = new SessionPlayerState { SessionId = session.Id, PlayerId = player.Id, IsGameMaster = true };
+        await ProtectedSessionStore.SetAsync("state", playerSessionState);
+
+
+        NavigationManager.NavigateTo("sessionlobby");
     }
 }

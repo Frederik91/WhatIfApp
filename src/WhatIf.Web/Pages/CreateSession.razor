@@ -1,10 +1,12 @@
 ﻿@page "/CreateSession"
 @using Microsoft.AspNetCore.Http.Extensions
 @using WhatIf.Core.Services
+@using WhatIf.Web.Models
 
 @inject IPlayerService PlayerService
 @inject ISessionService SessionService
 @inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 
 <h1>Create session</h1>
@@ -27,6 +29,9 @@
         var player = await PlayerService.Create(name, session.Id);
         await SessionService.SetGameMaster(session.Id, player.Id);
 
-        NavigationManager.NavigateTo($"sessionlobby/{session.Id}/{player.Id}");
+        var playerSessionState = new SessionPlayerState { SessionId = session.Id, PlayerId = player.Id, IsGameMaster = true };
+        await ProtectedSessionStore.SetAsync("state", playerSessionState);
+
+        NavigationManager.NavigateTo($"sessionlobby");
     }
 }

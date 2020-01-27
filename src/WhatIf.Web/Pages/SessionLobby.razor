@@ -1,12 +1,17 @@
-﻿@page "/sessionlobby/{SessionId:guid}/{PlayerId:guid}"
+﻿@page "/sessionlobby"
 @using System.Reflection.Metadata
+@using Microsoft.AspNetCore.Http.Connections
+@using Microsoft.AspNetCore.SignalR.Client
 @using WhatIf.Core.Models
 @using WhatIf.Core.Services
+@using WhatIf.Web.Helpers
+@using WhatIf.Web.Models
 
 @inject NavigationManager NavigationManager
 @inject IPlayerService PlayerService
 @inject ISessionService SessionService
-
+@inject ISignalRConnectionBuilder SignalRConnectionBuilder
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 @if (_player is null || _session is null)
 {
@@ -16,31 +21,65 @@ else
 {
     <h1>Game @_session.Number</h1>
     <h2>Welcome @_player.Name. Waiting for @_session.Name to start</h2>
+
+    <MatList>
+        @foreach (var player in _players)
+        {
+            <MatListItem>
+                @player.Name
+            </MatListItem>
+        }
+    </MatList>
 }
 
 
 
 @code{
-
-    [Parameter]
-    public Guid SessionId { get; set; }
-
-    [Parameter]
-    public Guid PlayerId { get; set; }
+    private readonly List<PlayerDto> _players = new List<PlayerDto>();
 
     private SessionDto _session;
     private PlayerDto _player;
 
     protected override async Task OnInitializedAsync()
     {
-        _session = await SessionService.Get(SessionId);
-        _player = await PlayerService.Get(PlayerId);
+        var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
+        _player = await PlayerService.Get(state.PlayerId);
+        _session = await SessionService.Get(state.SessionId);
         if (_session is null || _player is null)
         {
             NavigationManager.NavigateTo("error");
             return;
         }
 
+        _players.Add(_player);
+        await ConnectToSignalRHub(_session.Id, _player.Id);
+    }
 
+    private async Task ConnectToSignalRHub(Guid sessionId, Guid playerId)
+    {
+        var connection = SignalRConnectionBuilder.Build(NavigationManager.BaseUri);
+
+        connection.On<Guid>("PlayerJoined", HandlePlayerJoined);
+        connection.On<Guid>("PlayerLeft", HandlePlayerLeft);
+        await connection.StartAsync();
+
+        await connection.InvokeAsync("JoinGame", sessionId, playerId); // Invoke a method on the server called "ServerMethod" and pass parameters to it.
+    }
+
+    private void HandlePlayerLeft(Guid playerId)
+    {
+        var player = _players.FirstOrDefault(x => x.Id == playerId);
+        if (player is null)
+            return;
+
+        _players.Remove(player);
+        StateHasChanged();
+    }
+
+    private async Task HandlePlayerJoined(Guid playerId)
+    {
+        var player = await PlayerService.Get(playerId);
+        _players.Add(player);
+        StateHasChanged();
     }
 }
