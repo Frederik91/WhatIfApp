@@ -13,6 +13,8 @@
 @inject ISignalRConnectionBuilder SignalRConnectionBuilder
 @inject ProtectedSessionStorage ProtectedSessionStore
 
+@implements IDisposable
+
 @if (_player is null || _session is null)
 {
     <h1>Loading...</h1>
@@ -39,9 +41,11 @@ else
 
     private SessionDto _session;
     private PlayerDto _player;
+    private HubConnection _connection;
 
     protected override async Task OnInitializedAsync()
     {
+        NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
         var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
         _player = await PlayerService.Get(state.PlayerId);
         _session = await SessionService.Get(state.SessionId);
@@ -55,15 +59,20 @@ else
         await ConnectToSignalRHub(_session.Id, _player.Id);
     }
 
+    private async void NavigationManagerOnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        await _connection.InvokeAsync("LeaveGame", _session.Id, _player.Id);
+    }
+
     private async Task ConnectToSignalRHub(Guid sessionId, Guid playerId)
     {
-        var connection = SignalRConnectionBuilder.Build(NavigationManager.BaseUri);
+        _connection = SignalRConnectionBuilder.Build(NavigationManager.BaseUri);
 
-        connection.On<Guid>("PlayerJoined", HandlePlayerJoined);
-        connection.On<Guid>("PlayerLeft", HandlePlayerLeft);
-        await connection.StartAsync();
+        _connection.On<Guid>("PlayerJoined", HandlePlayerJoined);
+        _connection.On<Guid>("PlayerLeft", HandlePlayerLeft);
+        await _connection.StartAsync();
 
-        await connection.InvokeAsync("JoinGame", sessionId, playerId); // Invoke a method on the server called "ServerMethod" and pass parameters to it.
+        await _connection.InvokeAsync("JoinGame", sessionId, playerId); // Invoke a method on the server called "ServerMethod" and pass parameters to it.
     }
 
     private void HandlePlayerLeft(Guid playerId)
@@ -82,4 +91,10 @@ else
         _players.Add(player);
         StateHasChanged();
     }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= NavigationManagerOnLocationChanged;
+    }
+
 }
