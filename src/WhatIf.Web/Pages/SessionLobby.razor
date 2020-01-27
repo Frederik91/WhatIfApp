@@ -13,7 +13,7 @@
 @inject ISignalRConnectionBuilder SignalRConnectionBuilder
 @inject ProtectedSessionStorage ProtectedSessionStore
 
-@implements IDisposable
+@implements IAsyncDisposable
 
 @if (_player is null || _session is null)
 {
@@ -120,9 +120,10 @@ else
         StateHasChanged();
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         NavigationManager.LocationChanged -= NavigationManagerOnLocationChanged;
+        await _connection.DisposeAsync();
     }
 
 }
