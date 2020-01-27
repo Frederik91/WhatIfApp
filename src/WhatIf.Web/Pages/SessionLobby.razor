@@ -17,7 +17,8 @@
 
 @if (_player is null || _session is null)
 {
-    <h1>Loading...</h1>
+    <h3 class="mat-subtitle1">Joining session</h3>
+    <MatProgressBar Progress="0.6"></MatProgressBar>
 }
 else
 {
@@ -42,21 +43,48 @@ else
     private SessionDto _session;
     private PlayerDto _player;
     private HubConnection _connection;
+    private bool _isLoading;
+    private double _progress;
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set { _isLoading = value; StateHasChanged(); }
+    }
+
+    public double Progress
+    {
+        get => _progress;
+        set { _progress = value; StateHasChanged(); }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
-        var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
-        _player = await PlayerService.Get(state.PlayerId);
-        _session = await SessionService.Get(state.SessionId);
-        if (_session is null || _player is null)
+        IsLoading = true;
+        Progress = 0;
+        try
         {
-            NavigationManager.NavigateTo("error");
-            return;
+            NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
+            var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
+            Progress = 0.2;
+            _player = await PlayerService.Get(state.PlayerId);
+            Progress = 0.5;
+            _session = await SessionService.Get(state.SessionId);
+            Progress = 0.8;
+            if (_session is null || _player is null)
+            {
+                NavigationManager.NavigateTo("error");
+                return;
+            }
+
+            _players.Add(_player);
+            await ConnectToSignalRHub(_session.Id, _player.Id);
+        }
+        finally
+        {
+            IsLoading = false;
         }
 
-        _players.Add(_player);
-        await ConnectToSignalRHub(_session.Id, _player.Id);
     }
 
     private async void NavigationManagerOnLocationChanged(object sender, LocationChangedEventArgs e)
@@ -66,7 +94,7 @@ else
 
     private async Task ConnectToSignalRHub(Guid sessionId, Guid playerId)
     {
-        _connection = SignalRConnectionBuilder.Build(NavigationManager.BaseUri);
+        _connection = SignalRConnectionBuilder.Build();
 
         _connection.On<Guid>("PlayerJoined", HandlePlayerJoined);
         _connection.On<Guid>("PlayerLeft", HandlePlayerLeft);

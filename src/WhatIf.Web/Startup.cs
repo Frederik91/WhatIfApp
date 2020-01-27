@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -5,7 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WhatIf.Database;
 using LightInject;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using WhatIf.Web.Helpers;
 using WhatIf.Web.Hubs;
 
 namespace WhatIf.Web
@@ -24,11 +27,14 @@ namespace WhatIf.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSignalR().AddAzureSignalR(Configuration["Azure:SignalR:ConnectionString"]);
+            services.AddSignalR();//.AddAzureSignalR(Configuration["Azure:SignalR:ConnectionString"]);
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddProtectedBrowserStorage();
+
+
+
             // services.AddApplicationInsightsTelemetry();
         }
 

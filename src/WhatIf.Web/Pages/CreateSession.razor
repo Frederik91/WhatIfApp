@@ -11,27 +11,66 @@
 
 <h1>Create session</h1>
 
-<p><MatTextField @bind-Value="@name" Label="Nickname"></MatTextField></p>
-<p><MatTextField @bind-Value="@sessionName" Label="Game name"></MatTextField></p>
+@if (_isCreating)
+{
+    <h3 class="mat-subtitle1">Creating game: @name</h3>
+    <MatProgressBar Progress="0.6"></MatProgressBar>
+}
+else
+{
+    <p><MatTextField @bind-Value="@name" Label="Nickname"></MatTextField></p>
+    <p><MatTextField @bind-Value="@sessionName" Label="Game name"></MatTextField></p>
 
-<MatButton OnClick="@Create">Create</MatButton>
+    <MatButton OnClick="@Create">Create</MatButton>
+}
+
+
 
 @code {
     private string sessionName = "";
     private string name = string.Empty;
+    private double _progress;
+    private bool _isCreating;
+
+    public bool IsCreating
+    {
+        get => _isCreating;
+        set { _isCreating = value; StateHasChanged();}
+    }
+
+    public double Progress
+    {
+        get => _progress;
+        set { _progress = value; StateHasChanged(); }
+    }
 
     private async Task Create()
     {
-        var session = await SessionService.Create(sessionName);
-        if (session is null)
-            return;
+        Progress = 0;
+        IsCreating = true;
+        try
+        {
+            var session = await SessionService.Create(sessionName);
+            Progress = 0.2;
+            if (session is null)
+                return;
 
-        var player = await PlayerService.Create(name, session.Id);
-        await SessionService.SetGameMaster(session.Id, player.Id);
+            var player = await PlayerService.Create(name, session.Id);
+            Progress = 0.4;
+            await SessionService.SetGameMaster(session.Id, player.Id);
+            Progress = 0.7;
 
-        var playerSessionState = new SessionPlayerState { SessionId = session.Id, PlayerId = player.Id, IsGameMaster = true };
-        await ProtectedSessionStore.SetAsync("state", playerSessionState);
+            var playerSessionState = new SessionPlayerState { SessionId = session.Id, PlayerId = player.Id, IsGameMaster = true };
+            await ProtectedSessionStore.SetAsync("state", playerSessionState);
+            Progress = 1;
 
-        NavigationManager.NavigateTo($"sessionlobby");
+            NavigationManager.NavigateTo($"sessionlobby");
+        }
+        finally
+        {
+            IsCreating = false;
+        }
+
+
     }
 }
