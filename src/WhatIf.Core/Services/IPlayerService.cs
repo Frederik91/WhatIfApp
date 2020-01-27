@@ -10,5 +10,6 @@ namespace WhatIf.Core.Services
     {
         Task<PlayerDto> Create(string name, Guid sessionId);
         Task<PlayerDto> Get(Guid playerId);
+        Task<List<PlayerDto>> GetPlayersInSession(Guid sessionId);
     }
 }

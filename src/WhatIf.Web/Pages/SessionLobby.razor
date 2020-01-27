@@ -77,7 +77,9 @@ else
                 return;
             }
 
-            _players.Add(_player);
+            var playersInSession = await PlayerService.GetPlayersInSession(_session.Id);
+
+            _players.AddRange(playersInSession);
             await ConnectToSignalRHub(_session.Id, _player.Id);
         }
         finally

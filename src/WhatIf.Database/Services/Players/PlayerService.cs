@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using CQRS.Command.Abstractions;
@@ -30,6 +31,12 @@ namespace WhatIf.Database.Services.Players
         {
             var playerTbl = await _queryExecutor.ExecuteAsync(new PlayerByIdQuery { Id = playerId });
             return playerTbl is null ? null : _mapper.Map<PlayerDto>(playerTbl);
+        }
+
+        public async Task<List<PlayerDto>> GetPlayersInSession(Guid sessionId)
+        {
+            var playersTbl = await _queryExecutor.ExecuteAsync(new PlayersInSessionQuery { SessionId = sessionId });
+            return _mapper.Map<List<PlayerDto>>(playersTbl);
         }
     }
 }
