@@ -6,9 +6,6 @@ namespace WhatIf.Database.Tables
     {
         public Guid Id { get; set; }
 
-        public Guid SessionId { get; set; }
-        public SessionTbl Session { get; set; }
-
         public Guid CreatedByPlayerId { get; set; }
         public PlayerTbl CreatedByPlayer { get; set; }
 

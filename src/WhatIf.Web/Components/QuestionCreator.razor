@@ -1,0 +1,14 @@
+﻿@inherits QuestionCreatorComponentBase
+
+<MatCard class="demo-mat-card">
+    <MatCardContent>
+        <MatBody1 class="demo-mat-card-content demo-mat-card-clean-margin">
+            Create @Question.Name
+        </MatBody1>
+        <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
+            <p>
+                <MatTextField @bind-Value="@Question.Content" Label="Enter question here" FullWidth="true" TextArea="true"></MatTextField>
+            </p>
+        </MatBody2>
+    </MatCardContent>
+</MatCard>

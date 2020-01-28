@@ -4,6 +4,8 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using WhatIf.Core.Models
 @using WhatIf.Core.Services
+@using WhatIf.Database.Services.Answers
+@using WhatIf.Database.Services.Questions
 @using WhatIf.Web.Helpers
 @using WhatIf.Web.Models
 
@@ -12,17 +14,27 @@
 @inject ISessionService SessionService
 @inject ISignalRConnectionBuilder SignalRConnectionBuilder
 @inject ProtectedSessionStorage ProtectedSessionStore
+@inject IQuestionService QuestionService
+@inject IAnswerService AnswerService
 
 @implements IAsyncDisposable
 
-@if (_player is null || _session is null)
+@if (IsCreatingQuestions)
 {
-    <h3 class="mat-subtitle1">Loading game</h3>
-    <MatProgressBar Indeterminate="true"></MatProgressBar>
+    <QuestionsCreator QuestionCount="@_session.CardAmount" OnSubmit="@(async x => await SubmitQuestions(x))"></QuestionsCreator>
+}
+else if (IsWaitingForOtherPlayers)
+{
+    <h3 class="mat-subtitle1">Waiting for remaining players</h3>
+}
+else if (IsAnsweringQuestions)
+{
+
 }
 else
 {
-    <h1>Welcome to @_session.Name!</h1>
+    <h3 class="mat-subtitle1">Loading game</h3>
+    <MatProgressBar Indeterminate="true"></MatProgressBar>
 }
 
 
@@ -34,11 +46,32 @@ else
     private PlayerDto _player;
     private HubConnection _connection;
     private bool _isLoading;
+    private bool _isAnsweringQuestions;
+    private bool _isCreatingQuestions;
+    private bool _isWaitingForOtherPlayers;
 
     public bool IsLoading
     {
         get => _isLoading;
         set { _isLoading = value; StateHasChanged(); }
+    }
+
+    public bool IsCreatingQuestions
+    {
+        get => _isCreatingQuestions;
+        set { _isCreatingQuestions = value; StateHasChanged(); }
+    }
+
+    public bool IsAnsweringQuestions
+    {
+        get => _isAnsweringQuestions;
+        set { _isAnsweringQuestions = value; StateHasChanged(); }
+    }
+
+    public bool IsWaitingForOtherPlayers
+    {
+        get => _isWaitingForOtherPlayers;
+        set { _isWaitingForOtherPlayers = value; StateHasChanged(); }
     }
 
     protected override async Task OnInitializedAsync()
@@ -58,8 +91,11 @@ else
 
             var playersInSession = await PlayerService.GetPlayersInSession(_session.Id);
 
+
             _players.AddRange(playersInSession);
             await ConnectToSignalRHub(_session.Id, _player.Id);
+            IsCreatingQuestions = true;
+
         }
         finally
         {
@@ -76,22 +112,63 @@ else
     {
         _connection = SignalRConnectionBuilder.Build();
 
-        _connection.On<Guid>("PlayerJoined", HandlePlayerJoined);
+        _connection.On<Guid>("PlayerSubmittedQuestions", OnPlayerSubmittedQuestions);
+        _connection.On<Guid>("PlayerSubmittedAnswers", OnPlayerSubmittedAnswers);
+        _connection.On("StartAnsweringQuestions", OnStartAnsweringQuestions);
         await _connection.StartAsync();
 
-        await _connection.InvokeAsync("JoinGame", sessionId, playerId); // Invoke a method on the server called "ServerMethod" and pass parameters to it.
+        await _connection.SendAsync("JoinGame", _session.Id, _player.Id);
     }
 
-    private async Task HandlePlayerJoined(Guid playerId)
+    private async Task OnPlayerSubmittedQuestions(Guid playerId)
     {
-        var player = await PlayerService.Get(playerId);
-        _players.Add(player);
-        StateHasChanged();
+        var player = _players.First(x => x.Id == playerId);
+        player.HasSubmittedQuestions = true;
+        if (_players.All(x => x.HasSubmittedQuestions) && _player.IsGameMaster)
+            await AssignQuestionsAndStartAnswering();
     }
+
+    private async Task AssignQuestionsAndStartAnswering()
+    {
+        await QuestionService.AssignQuestions(_session.Id);
+        await _connection.SendAsync("NotifyStartAnsweringQuestions", _session.Id);
+    }
+
+    private void OnPlayerSubmittedAnswers(Guid playerId)
+    {
+        var player = _players.First(x => x.Id == playerId);
+        player.HasSubmittedQuestions = true;
+    }
+
 
     public async ValueTask DisposeAsync()
     {
         NavigationManager.LocationChanged -= NavigationManagerOnLocationChanged;
         await _connection.DisposeAsync();
+    }
+
+    private async Task SubmitQuestions(IEnumerable<QuestionModel> questions)
+    {
+        IsCreatingQuestions = false;
+        IsWaitingForOtherPlayers = true;
+        await QuestionService.SubmitQuestions(_player.Id, questions.Select(x => x.Content).ToList());
+        await _connection.SendAsync("NotifyPlayerSubmittedQuestions", _session.Id, _player.Id);
+        // await OnPlayerSubmittedQuestions(_player.Id);
+    }
+
+    private async Task SubmitAnswers(IEnumerable<AnswerModel> answers)
+    {
+        IsCreatingQuestions = false;
+        IsWaitingForOtherPlayers = true;
+        await AnswerService.SubmitAnswers(_player.Id, answers.Select(x => new SubmitAnswerRequest { Answer = x.Content, QuestionId = x.Question.Id }).ToList());
+        await _connection.SendAsync("NotifyPlayerSubmittedAnswers", _session.Id, _player.Id);
+        OnPlayerSubmittedAnswers(_player.Id);
+    }
+
+    private async Task OnStartAnsweringQuestions()
+    {
+        var questions = await QuestionService.GetQuestionsToAnswer(_player.Id);
+        IsWaitingForOtherPlayers = false;
+        IsAnsweringQuestions = true;
     }
 }

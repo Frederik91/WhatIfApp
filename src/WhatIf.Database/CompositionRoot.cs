@@ -4,7 +4,9 @@ using AutoMapper;
 using CQRS.LightInject;
 using Microsoft.EntityFrameworkCore;
 using WhatIf.Core.Services;
+using WhatIf.Database.Services.Answers;
 using WhatIf.Database.Services.Players;
+using WhatIf.Database.Services.Questions;
 using WhatIf.Database.Services.Sessions;
 
 namespace WhatIf.Database
@@ -22,6 +24,8 @@ namespace WhatIf.Database
 
             serviceRegistry.Register<ISessionService, SessionService>();
             serviceRegistry.Register<IPlayerService, PlayerService>();
+            serviceRegistry.Register<IQuestionService, QuestionService>();
+            serviceRegistry.Register<IAnswerService, AnswerService>();
 
             serviceRegistry.RegisterInstance<IMapper>(new Mapper(new MapperConfiguration(x =>
             {

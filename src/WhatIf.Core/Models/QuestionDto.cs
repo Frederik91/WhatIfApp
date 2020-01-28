@@ -6,5 +6,6 @@ namespace WhatIf.Core.Models
 {
     public class QuestionDto
     {
+        public Guid Id { get; set; }
     }
 }

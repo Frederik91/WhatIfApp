@@ -20,19 +20,29 @@ namespace WhatIf.Web.Hubs
             await Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("PlayerLeft", playerId);
         }
 
-        public async Task NotifySessionStarting(Guid gameId)
+        public Task NotifySessionStarting(Guid gameId)
         {
-            await Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("SessionStarting");
+            return Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("SessionStarting");
         }
 
-        public async Task NotifySessionStarted(Guid gameId)
+        public Task NotifySessionStarted(Guid gameId)
         {
-            await Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("SessionStarted");
+            return Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("SessionStarted");
         }
 
-        public async Task NotifyCardAmountChanged(Guid gameId, int cardAmount)
+        public Task NotifyCardAmountChanged(Guid gameId, int cardAmount)
         {
-            await Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("CardAmountChanged", cardAmount);
+            return Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("CardAmountChanged", cardAmount);
+        }
+
+        public Task NotifyPlayerSubmittedQuestions(Guid gameId, Guid playerId)
+        {
+            return Clients.Group(gameId.ToString()).SendAsync("PlayerSubmittedQuestions", playerId);
+        }
+
+        public Task NotifyStartAnsweringQuestions(Guid gameId)
+        {
+            return Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("StartAnsweringQuestions");
         }
     }
 }
