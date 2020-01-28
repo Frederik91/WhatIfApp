@@ -13,6 +13,8 @@ namespace WhatIf.Database
         {
             CreateMap<PlayerTbl, PlayerDto>().ReverseMap();
             CreateMap<SessionTbl, SessionDto>().ReverseMap();
+            CreateMap<QuestionTbl, QuestionDto>().ReverseMap();
+            CreateMap<AnswerTbl, AnswerDto>().ReverseMap();
         }
     }
 }

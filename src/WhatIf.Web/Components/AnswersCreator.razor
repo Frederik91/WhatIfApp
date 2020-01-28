@@ -1,0 +1,24 @@
+﻿@inherits AnswersCreatorComponentBase;
+
+<style>
+    .demo-mat-card {
+        max-width: 400px;
+    }
+
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
+
+    .demo-mat-card-clean-margin {
+        margin: 0px;
+    }
+</style>
+<MatTabGroup>
+    @foreach (var answer in Answers)
+    {
+        <MatTab Label="@answer.Title">
+            <AnswerCreator Answer="@answer"></AnswerCreator>
+        </MatTab>
+    }
+</MatTabGroup>
+<MatButton OnClick="@(async x => await Submit())">Submit</MatButton>

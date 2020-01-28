@@ -29,7 +29,7 @@ else if (IsWaitingForOtherPlayers)
 }
 else if (IsAnsweringQuestions)
 {
-
+    <AnswersCreator PlayerId="@_player.Id" OnSubmit="@(async x => await SubmitAnswers(x))"></AnswersCreator>
 }
 else
 {
@@ -165,9 +165,8 @@ else
         OnPlayerSubmittedAnswers(_player.Id);
     }
 
-    private async Task OnStartAnsweringQuestions()
+    private void OnStartAnsweringQuestions()
     {
-        var questions = await QuestionService.GetQuestionsToAnswer(_player.Id);
         IsWaitingForOtherPlayers = false;
         IsAnsweringQuestions = true;
     }

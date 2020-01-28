@@ -42,7 +42,7 @@ namespace WhatIf.Web.Hubs
 
         public Task NotifyStartAnsweringQuestions(Guid gameId)
         {
-            return Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("StartAnsweringQuestions");
+            return Clients.Group(gameId.ToString()).SendAsync("StartAnsweringQuestions");
         }
     }
 }

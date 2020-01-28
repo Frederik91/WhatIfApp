@@ -9,6 +9,6 @@ namespace WhatIf.Database.Services.Questions
     {
         Task SubmitQuestions(Guid playerId, List<string> questions);
         Task AssignQuestions(Guid sessionId);
-        Task<IEnumerable<QuestionDto>> GetQuestionsToAnswer(Guid playerId);
+        Task<IReadOnlyCollection<QuestionDto>> GetQuestionsToAnswer(Guid playerId);
     }
 }

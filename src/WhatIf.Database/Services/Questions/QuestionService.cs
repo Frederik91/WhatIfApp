@@ -32,10 +32,10 @@ namespace WhatIf.Database.Services.Questions
             return _commandExecutor.ExecuteAsync(new AssignQuestionsCommand { SessionId = sessionId });
         }
 
-        public async Task<IEnumerable<QuestionDto>> GetQuestionsToAnswer(Guid playerId)
+        public async Task<IReadOnlyCollection<QuestionDto>> GetQuestionsToAnswer(Guid playerId)
         {
             var questions = await _queryExecutor.ExecuteAsync(new QuestionsToAnswerQuery { PlayerId = playerId });
-            return _mapper.Map<IEnumerable<QuestionDto>>(questions);
+            return _mapper.Map<List<QuestionDto>>(questions);
         }
     }
 }

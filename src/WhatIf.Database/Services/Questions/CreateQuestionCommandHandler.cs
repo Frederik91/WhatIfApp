@@ -19,7 +19,7 @@ namespace WhatIf.Database.Services.Questions
         }
         public Task HandleAsync(CreateQuestionCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var questions = command.Questions.Select(x => new QuestionTbl { Id = Guid.NewGuid(), CreatedByPlayerId = command.PlayerId, Content = x });
+            var questions = command.Questions.Select(x => new QuestionTbl { Id = Guid.NewGuid(), CreatedByPlayerId = command.PlayerId, Content = x.EndsWith("?") ? x : x + "?" });
             _dbContext.Questions.AddRange(questions);
             _dbContext.Players.First(x => x.Id == command.PlayerId).HasSubmittedQuestions = true;
             return _dbContext.SaveChangesAsync(cancellationToken);
