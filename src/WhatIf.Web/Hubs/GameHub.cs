@@ -44,5 +44,15 @@ namespace WhatIf.Web.Hubs
         {
             return Clients.Group(gameId.ToString()).SendAsync("StartAnsweringQuestions");
         }
+
+        public Task NotifyReadingRoundStart(Guid gameId)
+        {
+            return Clients.Group(gameId.ToString()).SendAsync("ReadingRoundStart");
+        }
+
+        public Task RequestNextAnswer(Guid gameId, Guid answerId)
+        {
+            return Clients.Group(gameId.ToString()).SendAsync("NextAnswer", answerId);
+        }
     }
 }

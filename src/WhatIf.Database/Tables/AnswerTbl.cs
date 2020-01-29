@@ -13,5 +13,6 @@ namespace WhatIf.Database.Tables
         public QuestionTbl Question { get; set; }
 
         public string Content { get; set; }
+        public bool IsRead { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace WhatIf.Core.Models
         public Guid SessionId { get; set; }
         public bool IsGameMaster { get; set; }
         public bool HasSubmittedQuestions { get; set; }
+        public bool HasSubmittedAnswers { get; set; }
+        public bool IsRead { get; set; }
     }
 }

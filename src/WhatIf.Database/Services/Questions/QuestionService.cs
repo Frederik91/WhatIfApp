@@ -37,5 +37,10 @@ namespace WhatIf.Database.Services.Questions
             var questions = await _queryExecutor.ExecuteAsync(new QuestionsToAnswerQuery { PlayerId = playerId });
             return _mapper.Map<List<QuestionDto>>(questions);
         }
+
+        public Task MarkQuestionAsRead(Guid questionId)
+        {
+            return _commandExecutor.ExecuteAsync(new MarkQuestionAsReadCommand { QuestionId = questionId });
+        }
     }
 }

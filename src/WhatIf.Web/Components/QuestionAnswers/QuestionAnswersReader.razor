@@ -1,0 +1,35 @@
+﻿@inherits QuestionAnswersReaderComponentBase
+
+
+<style>
+    .demo-mat-card {
+        max-width: 400px;
+    }
+
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
+
+    .demo-mat-card-clean-margin {
+        margin: 0px;
+    }
+</style>
+
+@if (ShowStartupScreen)
+{
+    <h1>You are ready to read questions and answers, click start to begin.</h1>
+    <MatButton onclick="@Start()">Start</MatButton>
+}
+else if (Current is null)
+{
+    <h1>Waiting for your turn</h1>
+}
+else if (ReadQuestion)
+{
+    <QuestionReader></QuestionReader>
+}
+else if (ReadAnswer)
+{
+    <AnswerReader></AnswerReader>
+}
+<MatButton OnClick="@(async x => await OnNextQuestion())">Submit</MatButton>

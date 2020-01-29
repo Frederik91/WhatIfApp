@@ -6,6 +6,8 @@
 @using WhatIf.Core.Services
 @using WhatIf.Database.Services.Answers
 @using WhatIf.Database.Services.Questions
+@using WhatIf.Web.Components.Answers
+@using WhatIf.Web.Components.Questions
 @using WhatIf.Web.Helpers
 @using WhatIf.Web.Models
 
@@ -31,6 +33,11 @@ else if (IsAnsweringQuestions)
 {
     <AnswersCreator PlayerId="@_player.Id" OnSubmit="@(async x => await SubmitAnswers(x))"></AnswersCreator>
 }
+
+else if (ShowReadingRound)
+{
+    <QuestionAnswersReader PlayerId="@_player.Id" Connection="@_connection"></QuestionAnswersReader>
+}
 else
 {
     <h3 class="mat-subtitle1">Loading game</h3>
@@ -49,6 +56,7 @@ else
     private bool _isAnsweringQuestions;
     private bool _isCreatingQuestions;
     private bool _isWaitingForOtherPlayers;
+    private bool _showReadingRound;
 
     public bool IsLoading
     {
@@ -72,6 +80,12 @@ else
     {
         get => _isWaitingForOtherPlayers;
         set { _isWaitingForOtherPlayers = value; StateHasChanged(); }
+    }
+
+    public bool ShowReadingRound
+    {
+        get => _showReadingRound;
+        set { _showReadingRound = value; StateHasChanged(); }
     }
 
     protected override async Task OnInitializedAsync()
@@ -111,13 +125,19 @@ else
     private async Task ConnectToSignalRHub(Guid sessionId, Guid playerId)
     {
         _connection = SignalRConnectionBuilder.Build();
-
         _connection.On<Guid>("PlayerSubmittedQuestions", OnPlayerSubmittedQuestions);
         _connection.On<Guid>("PlayerSubmittedAnswers", OnPlayerSubmittedAnswers);
         _connection.On("StartAnsweringQuestions", OnStartAnsweringQuestions);
+        _connection.On("ReadingRoundStart", OnReadingRoundStart);
         await _connection.StartAsync();
 
         await _connection.SendAsync("JoinGame", _session.Id, _player.Id);
+    }
+
+    private void OnReadingRoundStart()
+    {
+        IsAnsweringQuestions = false;
+        ShowReadingRound = true;
     }
 
     private async Task OnPlayerSubmittedQuestions(Guid playerId)
@@ -134,10 +154,18 @@ else
         await _connection.SendAsync("NotifyStartAnsweringQuestions", _session.Id);
     }
 
-    private void OnPlayerSubmittedAnswers(Guid playerId)
+    private async Task OnPlayerSubmittedAnswers(Guid playerId)
     {
         var player = _players.First(x => x.Id == playerId);
         player.HasSubmittedQuestions = true;
+        if (_players.All(x => x.HasSubmittedAnswers) && _player.IsGameMaster)
+            await AssignAnswersAndQuestions();
+    }
+
+    private async Task AssignAnswersAndQuestions()
+    {
+        await AnswerService.AssignAnswersAndQuestions(_session.Id);
+        await _connection.SendAsync("NotifyReadingRoundStart", _session.Id);
     }
 
 
@@ -147,22 +175,20 @@ else
         await _connection.DisposeAsync();
     }
 
-    private async Task SubmitQuestions(IEnumerable<QuestionModel> questions)
+    private async Task SubmitQuestions(IEnumerable<CreateQuestionModel> questions)
     {
         IsCreatingQuestions = false;
         IsWaitingForOtherPlayers = true;
         await QuestionService.SubmitQuestions(_player.Id, questions.Select(x => x.Content).ToList());
         await _connection.SendAsync("NotifyPlayerSubmittedQuestions", _session.Id, _player.Id);
-        // await OnPlayerSubmittedQuestions(_player.Id);
     }
 
-    private async Task SubmitAnswers(IEnumerable<AnswerModel> answers)
+    private async Task SubmitAnswers(IEnumerable<CreateAnswerModel> answers)
     {
         IsCreatingQuestions = false;
         IsWaitingForOtherPlayers = true;
         await AnswerService.SubmitAnswers(_player.Id, answers.Select(x => new SubmitAnswerRequest { Answer = x.Content, QuestionId = x.Question.Id }).ToList());
         await _connection.SendAsync("NotifyPlayerSubmittedAnswers", _session.Id, _player.Id);
-        OnPlayerSubmittedAnswers(_player.Id);
     }
 
     private void OnStartAnsweringQuestions()

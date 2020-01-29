@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MatBlazor;
 using Microsoft.AspNetCore.Components;
 using WhatIf.Database.Services.Questions;
 
-namespace WhatIf.Web.Components
+namespace WhatIf.Web.Components.Answers
 {
     public class AnswersCreatorComponentBase : ComponentBase
     {
         [Inject] public IQuestionService QuestionService { get; set; }
 
-        public List<AnswerModel> Answers { get; set; }
+        public List<CreateAnswerModel> Answers { get; set; }
 
-        [Parameter] public EventCallback<List<AnswerModel>> OnSubmit { get; set; }
+        [Parameter] public EventCallback<List<CreateAnswerModel>> OnSubmit { get; set; }
         [Parameter] public Guid PlayerId { get; set; }
 
         protected override Task OnParametersSetAsync()
@@ -25,10 +24,10 @@ namespace WhatIf.Web.Components
         public async Task Load(Guid playerId)
         {
             var questions = await QuestionService.GetQuestionsToAnswer(playerId);
-            Answers = new List<AnswerModel>();
+            Answers = new List<CreateAnswerModel>();
             foreach (var question in questions)
             {
-                Answers.Add(new AnswerModel { Title = $"Question {questions.IndexOf(question) + 1}", Question = question, Content = string.Empty });
+                Answers.Add(new CreateAnswerModel { Title = $"Question {questions.IndexOf(question) + 1}", Question = question, Content = string.Empty });
             }
         }
 
