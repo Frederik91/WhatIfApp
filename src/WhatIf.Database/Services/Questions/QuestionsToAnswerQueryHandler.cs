@@ -20,9 +20,11 @@ namespace WhatIf.Database.Services.Questions
             _dbContext = dbContext;
         }
 
-        public Task<List<QuestionTbl>> HandleAsync(QuestionsToAnswerQuery query, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<List<QuestionTbl>> HandleAsync(QuestionsToAnswerQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            return _dbContext.Questions.Where(x => x.AssignedToPlayerId == query.PlayerId).ToListAsync(cancellationToken);
+
+            return await _dbContext.Questions.AsNoTracking().Where(x => x.AssignedToPlayerId == query.PlayerId).ToListAsync(cancellationToken);
         }
     }
 }
+    

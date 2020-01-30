@@ -14,7 +14,9 @@ namespace WhatIf.Database.Tables
         public PlayerTbl AssignedToPlayer { get; set; }
 
         public Guid AssignedAnswerId { get; set; }
-        public AnswerTbl AssignedAnswer { get; set; }
+
         public bool IsRead { get; set; }
+        public Guid SessionId { get; set; }
+        public SessionTbl Session { get; set; }
     }
 }

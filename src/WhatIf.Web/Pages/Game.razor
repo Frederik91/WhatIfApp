@@ -136,7 +136,8 @@ else
 
     private void OnReadingRoundStart()
     {
-        IsAnsweringQuestions = false;
+        _isAnsweringQuestions = false;
+        _isWaitingForOtherPlayers = false;
         ShowReadingRound = true;
     }
 
@@ -157,7 +158,7 @@ else
     private async Task OnPlayerSubmittedAnswers(Guid playerId)
     {
         var player = _players.First(x => x.Id == playerId);
-        player.HasSubmittedQuestions = true;
+        player.HasSubmittedAnswers = true;
         if (_players.All(x => x.HasSubmittedAnswers) && _player.IsGameMaster)
             await AssignAnswersAndQuestions();
     }

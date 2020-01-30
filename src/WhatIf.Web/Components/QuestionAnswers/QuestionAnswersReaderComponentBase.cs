@@ -17,12 +17,10 @@ namespace WhatIf.Web.Components.QuestionAnswers
         private IDisposable _readAnswerHandler;
         private bool _readQuestion;
         private bool _readAnswer;
-        private PlayerDto _player;
         private bool _showStartupScreen;
         private QuestionAnswerModel _current;
         [Inject] private IAnswerService AnswerService { get; set; }
         [Inject] private IQuestionService QuestionService { get; set; }
-        [Inject] private IPlayerService PlayerService { get; set; }
 
         [Parameter] public Guid PlayerId { get; set; }
         [Parameter] public HubConnection Connection { get; set; }
@@ -58,7 +56,6 @@ namespace WhatIf.Web.Components.QuestionAnswers
         {
             _readAnswerHandler = Connection.On<Guid>("ReadAnswer", OnReadAnswer);
             var questionAnswers = await AnswerService.GetQuestionAnswersFromPlayer(PlayerId);
-            _player = await PlayerService.Get(PlayerId);
             QuestionAnswers = new List<QuestionAnswerModel>();
             foreach (var questionAnswer in questionAnswers)
             {

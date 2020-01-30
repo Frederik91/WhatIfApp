@@ -17,7 +17,7 @@
     @foreach (var answer in Answers)
     {
         <MatTab Label="@answer.Title">
-            <AnswerCreator Answer="@answer"></AnswerCreator>
+            <AnswerCreator CreateAnswer="@answer"></AnswerCreator>
         </MatTab>
     }
 </MatTabGroup>

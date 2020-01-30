@@ -20,12 +20,14 @@ namespace WhatIf.Database.Services.Answers
 
         public Task HandleAsync(SubmitAnswersCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
+            var player = _dbContext.Players.First(x => x.Id == command.PlayerId);
             var answers = command.Requests.Select(x => new AnswerTbl
             {
                 Id = Guid.NewGuid(),
                 CreatedByPlayerId = command.PlayerId,
                 QuestionId = x.QuestionId,
-                Content = x.Answer
+                Content = x.Answer,
+                SessionId = player.SessionId
             });
             _dbContext.Answers.AddRange(answers);
             return _dbContext.SaveChangesAsync(cancellationToken);

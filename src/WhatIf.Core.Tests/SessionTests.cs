@@ -3,7 +3,7 @@ using Xunit;
 
 namespace WhatIf.Core.Tests
 {
-    public class UnitTest1
+    public class SessionTests
     {
         [Fact]
         public void Test1()

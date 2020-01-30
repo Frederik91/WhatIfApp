@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CQRS.Command.Abstractions;
+using Microsoft.EntityFrameworkCore;
 using WhatIf.Database.Tables;
 
 namespace WhatIf.Database.Services.Questions
@@ -17,12 +18,13 @@ namespace WhatIf.Database.Services.Questions
         {
             _dbContext = dbContext;
         }
-        public Task HandleAsync(CreateQuestionCommand command, CancellationToken cancellationToken = new CancellationToken())
+        public async Task HandleAsync(CreateQuestionCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var questions = command.Questions.Select(x => new QuestionTbl { Id = Guid.NewGuid(), CreatedByPlayerId = command.PlayerId, Content = x.EndsWith("?") ? x : x + "?" });
+            var player = _dbContext.Players.First(x => x.Id == command.PlayerId);
+            var questions = command.Questions.Select(x => new QuestionTbl { Id = Guid.NewGuid(), CreatedByPlayerId = command.PlayerId, Content = x.EndsWith("?") ? x : x + "?", SessionId = player.SessionId });
             _dbContext.Questions.AddRange(questions);
-            _dbContext.Players.First(x => x.Id == command.PlayerId).HasSubmittedQuestions = true;
-            return _dbContext.SaveChangesAsync(cancellationToken);
+            player.HasSubmittedQuestions = true;
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

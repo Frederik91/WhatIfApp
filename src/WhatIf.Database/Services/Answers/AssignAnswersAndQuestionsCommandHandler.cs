@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CQRS.Command.Abstractions;
+using Microsoft.EntityFrameworkCore;
+using WhatIf.Database.Extensions;
 using WhatIf.Database.Tables;
 
 namespace WhatIf.Database.Services.Answers
@@ -18,12 +20,23 @@ namespace WhatIf.Database.Services.Answers
             _dbContext = dbContext;
         }
 
-        public Task HandleAsync(AssignAnswersAndQuestionsCommand command, CancellationToken cancellationToken = new CancellationToken())
+        public async Task HandleAsync(AssignAnswersAndQuestionsCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var question = _dbContext.Answers.First(x => x.Id == command.AnswerId);
-            question.IsRead = true;
-            _dbContext.Entry(question).Property(x => x.IsRead).IsModified = true;
-            return _dbContext.SaveChangesAsync(cancellationToken);
+            var playerIds = await _dbContext.Players.Where(x => x.SessionId == command.SessionId).Select(x => x.Id).ToListAsync(cancellationToken);
+            var questions = await _dbContext.Questions.Where(x => x.SessionId == command.SessionId).ToListAsync(cancellationToken);
+            questions.Shuffle();
+            var answers = await _dbContext.Answers.Where(x => x.SessionId == command.SessionId).ToListAsync(cancellationToken);
+            answers.Shuffle();
+
+            foreach (var question in questions)
+            {
+                var answer = answers.First(x => x.QuestionId != question.Id);
+                answers.Remove(answer);
+                question.AssignedAnswerId = answer.Id;
+                question.PlayerToReadQuestionId = question.
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }

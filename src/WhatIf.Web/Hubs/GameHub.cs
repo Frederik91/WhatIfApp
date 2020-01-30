@@ -40,6 +40,11 @@ namespace WhatIf.Web.Hubs
             return Clients.Group(gameId.ToString()).SendAsync("PlayerSubmittedQuestions", playerId);
         }
 
+        public Task NotifyPlayerSubmittedAnswers(Guid gameId, Guid playerId)
+        {
+            return Clients.Group(gameId.ToString()).SendAsync("PlayerSubmittedAnswers", playerId);
+        }
+
         public Task NotifyStartAnsweringQuestions(Guid gameId)
         {
             return Clients.Group(gameId.ToString()).SendAsync("StartAnsweringQuestions");

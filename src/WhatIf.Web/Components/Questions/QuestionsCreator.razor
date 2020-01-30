@@ -17,7 +17,7 @@
     @foreach (var question in Questions)
     {
         <MatTab Label="@question.Name">
-            <QuestionCreator Question="@question"></QuestionCreator>
+            <QuestionCreator CreateQuestion="@question"></QuestionCreator>
         </MatTab>
     }
 </MatTabGroup>
