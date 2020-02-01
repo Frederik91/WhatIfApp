@@ -51,31 +51,42 @@ namespace WhatIf.Core.Tests
             session.CardAmount = playerAndCardCount;
             for (var i = 0; i < session.CardAmount; i++)
             {
-                var player = await playerService.Create(Guid.NewGuid().ToString(), session.Id, i == 0);
+                var player = await playerService.Create(i.ToString(), session.Id, i == 0);
                 players.Add(player);
             }
 
             await sessionService.Start(session.Id, session.CardAmount);
+            var questionIndex = 0;
             foreach (var player in players)
             {
                 var questions = new List<string>();
                 for (var i = 0; i < session.CardAmount; i++)
-                    questions.Add(Guid.NewGuid().ToString());
+                {
+                    questions.Add(questionIndex.ToString());
+                    questionIndex++;
+                }
+          
 
                 await questionService.SubmitQuestions(player.Id, questions);
             }
 
             await questionService.AssignQuestions(session.Id);
 
+            var answerIndex = 0;
             foreach (var player in players)
             {
                 var answers = await questionService.GetQuestionsToAnswer(player.Id);
                 Assert.Equal(session.CardAmount, answers.Count);
 
-                await answerService.SubmitAnswers(player.Id, answers.Select(x => new SubmitAnswerRequest
+                await answerService.SubmitAnswers(player.Id, answers.Select(x =>
                 {
-                    Answer = Guid.NewGuid().ToString(),
-                    QuestionId = x.Id
+                    var request = new SubmitAnswerRequest
+                    {
+                        Answer = answerIndex.ToString(),
+                        QuestionId = x.Id
+                    };
+                    answerIndex++;
+                    return request;
                 }).ToList());
             }
 

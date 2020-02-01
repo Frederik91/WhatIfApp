@@ -23,47 +23,34 @@ namespace WhatIf.Database.Services.Answers
         public async Task HandleAsync(AssignAnswersAndQuestionsCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
             var questions = await _dbContext.Questions.Where(x => x.SessionId == command.SessionId).ToListAsync(cancellationToken);
-            questions.Shuffle();
             var answers = await _dbContext.Answers.Where(x => x.SessionId == command.SessionId).ToListAsync(cancellationToken);
-            answers.Shuffle();
             var playerIds = await _dbContext.Players.Where(x => x.SessionId == command.SessionId).Select(x => x.Id).ToListAsync(cancellationToken);
 
-
-            var assignedAnswers = new HashSet<Guid>();
-            var cards = new List<(QuestionTbl, AnswerTbl)>();
+            var cardPerPlayerCount = questions.Count / playerIds.Count;
+            var cards = new Dictionary<Guid, List<(QuestionTbl, AnswerTbl)>>();
             foreach (var question in questions)
             {
-                var answer = answers.FirstOrDefault(y => y.QuestionId != question.Id && !assignedAnswers.Contains(y.Id));
-                if (answer is null)
-                {
-                    var assignedAnswer = answers.First(y => assignedAnswers.Contains(y.Id) && y.QuestionId != question.Id);
-                    var card = cards.First(x => x.Item2.Id == assignedAnswer.Id);
-                    answer = card.Item2;
-                    card.Item2 = answers.First(y => y.QuestionId != question.Id && !assignedAnswers.Contains(y.Id));
-                    assignedAnswers.Add(card.Item2.Id);
-                }
-                cards.Add((question, answer));
+                var answer = answers.FirstOrDefault(y => y.QuestionId == question.Id);
+                var playerId = playerIds[cards.Count % cardPerPlayerCount];
+                var card = (question, answer);
+                if (cards.TryGetValue(playerId, out var playerCards))
+                    playerCards.Add(card);
+                else
+                    cards.Add(playerId, new List<(QuestionTbl, AnswerTbl)> { card });
             }
 
-            
-            foreach (var card in cards)
+            foreach (var playerCardGroup in cards)
             {
-                
-            }
-
-            var cardsPerPlayerCount = cards.Count / playerIds.Count;
-            var cardIndex = 0;
-            for (var i = 0; i < playerIds.Count; i++)
-            {
-                var questionPlayerId = playerIds[i];
-                var answerPlayerId = playerIds[i + 1 < playerIds.Count ? i + 1 : 0];
-                for (var j = 0; j < cardsPerPlayerCount; j++)
+                var index = playerIds.IndexOf(playerCardGroup.Key);
+                var nextPlayerId = playerIds[index < playerIds.Count ? index : 0];
+                var nextPlayerCards = cards[nextPlayerId];
+                foreach (var card in playerCardGroup.Value)
                 {
-                    var card = cards[cardIndex];
-                    card.Item1.AssignedAnswerId = card.Item2.Id;
-                    card.Item1.PlayerToReadQuestionId = questionPlayerId;
-                    card.Item2.PlayerToReadAnswerId = answerPlayerId;
-                    cardIndex++;
+                    card.Item1.PlayerToReadQuestionId = playerCardGroup.Key;
+                    card.Item2.PlayerToReadAnswerId = playerCardGroup.Key;
+                    var cardIndex = playerCardGroup.Value.IndexOf(card);
+                    var nextPlayerCard = nextPlayerCards[cardIndex];
+                    card.Item1.AssignedAnswerId = nextPlayerCard.Item2.Id;
                 }
             }
 
