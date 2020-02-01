@@ -110,13 +110,13 @@ namespace WhatIf.Web.Components.QuestionAnswers
             GameHasEnded = true;
         }
 
-        private void OnReadAnswer(Guid answerId)
+        private async Task OnReadAnswer(Guid answerId)
         {
             Current = QuestionAnswers.FirstOrDefault(x => x.Answer.Id == answerId);
             if (Current is null)
                 return;
 
-            if (Current.Answer.IsRead)
+            if (QuestionAnswers.All(x => x.Answer.IsRead && x.Question.IsRead))
             {
                 PlayerIsFinished = true;
                 ReadAnswer = false;
@@ -125,6 +125,8 @@ namespace WhatIf.Web.Components.QuestionAnswers
                 return;
             }
 
+            Current.Answer.IsRead = true;
+            await QuestionService.MarkQuestionAsRead(Current.Question.Id);
             ReadAnswer = true;
             ReadQuestion = false;
             ShowStartupScreen = false;
@@ -141,6 +143,8 @@ namespace WhatIf.Web.Components.QuestionAnswers
             ReadQuestion = true;
             ReadAnswer = false;
             Current = QuestionAnswers.First();
+            Current.Question.IsRead = true;
+            await QuestionService.MarkQuestionAsRead(Current.Question.Id);
             await Connection.SendAsync("RequestNextAnswer", _player.SessionId, Current.Question.AssignedAnswerId);
         }
 
@@ -148,10 +152,9 @@ namespace WhatIf.Web.Components.QuestionAnswers
         {
             ReadAnswer = false;
             ReadQuestion = true;
+
             Current.Question.IsRead = true;
-            Current.Answer.IsRead = true;
             await AnswerService.MarkAnswerAsRead(Current.Answer.Id);
-            await QuestionService.MarkQuestionAsRead(Current.Question.Id);
             var remainingAnswers = await AnswerService.GetRemainingAnswerCount(_player.SessionId);
             if (remainingAnswers > 0)
                 await Connection.SendAsync("RequestNextAnswer", _player.SessionId, Current.Question.AssignedAnswerId);

@@ -29,16 +29,19 @@ namespace WhatIf.Database.Services.Answers
             var playerIds = await _dbContext.Players.Where(x => x.SessionId == command.SessionId).Select(x => x.Id).ToListAsync(cancellationToken);
 
 
-            foreach (var question in questions)
+            for (var i = 0; i < playerIds.Count; i++)
             {
-                var answer = answers.First(x => x.QuestionId != question.Id);
-                answers.Remove(answer);
-                question.AssignedAnswerId = answer.Id;
-                question.PlayerToReadQuestionId = answer.CreatedByPlayerId;
-
-                answer.PlayerToReadAnswerId = question.CreatedByPlayerId != answer.CreatedByPlayerId
-                    ? question.CreatedByPlayerId
-                    : question.AssignedToPlayerId.GetValueOrDefault();
+                var questionPlayerId = playerIds[i];
+                var answerPlayerId = playerIds[i + 1 < playerIds.Count ? i + 1 : 0];
+                var questionsToAnswer = questions.Where(x => x.CreatedByPlayerId == answerPlayerId);
+                foreach (var question in questionsToAnswer)
+                {
+                    question.PlayerToReadQuestionId = questionPlayerId;
+                    var answer = answers.First();
+                    answer.PlayerToReadAnswerId = answerPlayerId;
+                    question.AssignedAnswerId = answer.Id;
+                    answers.Remove(answer);
+                }
             }
 
 

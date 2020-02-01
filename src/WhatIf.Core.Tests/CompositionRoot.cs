@@ -16,15 +16,30 @@ namespace WhatIf.Core.Tests
             serviceRegistry.RegisterFrom<WhatIf.Core.CompositionRoot>();
             serviceRegistry.RegisterFrom<WhatIf.Database.CompositionRoot>();
 
+            #region MemoryTesting
 
             var connection = new SqliteConnection("DataSource=:memory:");
             connection.Open();
 
-            var options = new DbContextOptionsBuilder<WhatIfDbContext>()
+            var inMemoryOptions = new DbContextOptionsBuilder<WhatIfDbContext>()
                 .UseSqlite(connection)
                 .Options;
 
-            serviceRegistry.RegisterInstance<DbContextOptions>(options);
+            serviceRegistry.RegisterInstance<DbContextOptions>(inMemoryOptions);
+
+            #endregion
+
+            #region FileTesting
+
+            //var fileOptions = new DbContextOptionsBuilder<WhatIfDbContext>()
+            //    .UseSqlite($"DataSource={Guid.NewGuid()}.db")
+            //    .Options;
+
+            //serviceRegistry.RegisterInstance<DbContextOptions>(fileOptions);
+
+            #endregion
+
+
             serviceRegistry.Register<WhatIfDbContext>();
 
             if (serviceRegistry is IServiceFactory factory)

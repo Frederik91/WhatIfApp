@@ -21,8 +21,8 @@ namespace WhatIf.Database.Services.Answers
 
         public async Task<List<QuestionAnswerCpt>> HandleAsync(GetQuestionAnswersByPlayerQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            var questions = await _whatIfDbContext.Questions.Where(x => x.PlayerToReadQuestionId == query.PlayerId).ToListAsync(cancellationToken);
-            var answers = await _whatIfDbContext.Answers.Where(x => x.PlayerToReadAnswerId == query.PlayerId).ToListAsync(cancellationToken);
+            var questions = await _whatIfDbContext.Questions.AsNoTracking().Where(x => x.PlayerToReadQuestionId == query.PlayerId).ToListAsync(cancellationToken);
+            var answers = await _whatIfDbContext.Answers.AsNoTracking().Where(x => x.PlayerToReadAnswerId == query.PlayerId).ToListAsync(cancellationToken);
 
             return answers.Select((t, i) => new QuestionAnswerCpt { Question = questions[i], Answer = t }).ToList();
         }
