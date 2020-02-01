@@ -55,7 +55,7 @@ namespace WhatIf.Core.Tests
                 players.Add(player);
             }
 
-            await sessionService.Start(session.Id, 3);
+            await sessionService.Start(session.Id, session.CardAmount);
             foreach (var player in players)
             {
                 var questions = new List<string>();
@@ -88,6 +88,18 @@ namespace WhatIf.Core.Tests
                 Assert.True(answerQuestions.DistinctBy(x => x.Answer.Id).Count() == answerQuestions.Count);
                 Assert.True(answerQuestions.All(x => answerQuestions.All(y => y.Answer.Id != x.Question.AssignedAnswerId)));
                 allQuestionAnswerDtos.AddRange(answerQuestions);
+            }
+
+            var question = allQuestionAnswerDtos.First().Question;
+            var readQuestions = new HashSet<Guid> { question.Id };
+            while (true)
+            {
+                var answer = allQuestionAnswerDtos.First(x => x.Answer.Id == question.AssignedAnswerId);
+                question = answer.Question;
+                Assert.DoesNotContain(question.Id, readQuestions);
+                readQuestions.Add(question.Id);
+                if (readQuestions.Count == allQuestionAnswerDtos.Count)
+                    break;
             }
 
             Assert.Equal(session.CardAmount * session.CardAmount, allQuestionAnswerDtos.Select(x => x.Question.AssignedAnswerId).Distinct().Count());

@@ -29,18 +29,41 @@ namespace WhatIf.Database.Services.Answers
             var playerIds = await _dbContext.Players.Where(x => x.SessionId == command.SessionId).Select(x => x.Id).ToListAsync(cancellationToken);
 
 
+            var assignedAnswers = new HashSet<Guid>();
+            var cards = new List<(QuestionTbl, AnswerTbl)>();
+            foreach (var question in questions)
+            {
+                var answer = answers.FirstOrDefault(y => y.QuestionId != question.Id && !assignedAnswers.Contains(y.Id));
+                if (answer is null)
+                {
+                    var assignedAnswer = answers.First(y => assignedAnswers.Contains(y.Id) && y.QuestionId != question.Id);
+                    var card = cards.First(x => x.Item2.Id == assignedAnswer.Id);
+                    answer = card.Item2;
+                    card.Item2 = answers.First(y => y.QuestionId != question.Id && !assignedAnswers.Contains(y.Id));
+                    assignedAnswers.Add(card.Item2.Id);
+                }
+                cards.Add((question, answer));
+            }
+
+            
+            foreach (var card in cards)
+            {
+                
+            }
+
+            var cardsPerPlayerCount = cards.Count / playerIds.Count;
+            var cardIndex = 0;
             for (var i = 0; i < playerIds.Count; i++)
             {
                 var questionPlayerId = playerIds[i];
                 var answerPlayerId = playerIds[i + 1 < playerIds.Count ? i + 1 : 0];
-                var questionsToAnswer = questions.Where(x => x.CreatedByPlayerId == answerPlayerId);
-                foreach (var question in questionsToAnswer)
+                for (var j = 0; j < cardsPerPlayerCount; j++)
                 {
-                    question.PlayerToReadQuestionId = questionPlayerId;
-                    var answer = answers.First();
-                    answer.PlayerToReadAnswerId = answerPlayerId;
-                    question.AssignedAnswerId = answer.Id;
-                    answers.Remove(answer);
+                    var card = cards[cardIndex];
+                    card.Item1.AssignedAnswerId = card.Item2.Id;
+                    card.Item1.PlayerToReadQuestionId = questionPlayerId;
+                    card.Item2.PlayerToReadAnswerId = answerPlayerId;
+                    cardIndex++;
                 }
             }
 

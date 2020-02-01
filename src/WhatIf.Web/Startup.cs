@@ -38,10 +38,6 @@ namespace WhatIf.Web
                 var connectionString = Configuration.GetConnectionString("WhatIfDatabase");
                 options.UseSqlite(connectionString);
             });
-
-
-
-            // services.AddApplicationInsightsTelemetry();
         }
 
 
