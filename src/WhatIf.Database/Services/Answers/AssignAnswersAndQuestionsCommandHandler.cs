@@ -22,19 +22,26 @@ namespace WhatIf.Database.Services.Answers
 
         public async Task HandleAsync(AssignAnswersAndQuestionsCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
-            var playerIds = await _dbContext.Players.Where(x => x.SessionId == command.SessionId).Select(x => x.Id).ToListAsync(cancellationToken);
             var questions = await _dbContext.Questions.Where(x => x.SessionId == command.SessionId).ToListAsync(cancellationToken);
             questions.Shuffle();
             var answers = await _dbContext.Answers.Where(x => x.SessionId == command.SessionId).ToListAsync(cancellationToken);
             answers.Shuffle();
+            var playerIds = await _dbContext.Players.Where(x => x.SessionId == command.SessionId).Select(x => x.Id).ToListAsync(cancellationToken);
+
 
             foreach (var question in questions)
             {
                 var answer = answers.First(x => x.QuestionId != question.Id);
                 answers.Remove(answer);
                 question.AssignedAnswerId = answer.Id;
-                question.PlayerToReadQuestionId = question.
+                question.PlayerToReadQuestionId = answer.CreatedByPlayerId;
+
+                answer.PlayerToReadAnswerId = question.CreatedByPlayerId != answer.CreatedByPlayerId
+                    ? question.CreatedByPlayerId
+                    : question.AssignedToPlayerId.GetValueOrDefault();
             }
+
+
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }

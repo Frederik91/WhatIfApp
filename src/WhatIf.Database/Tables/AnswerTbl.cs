@@ -16,5 +16,6 @@ namespace WhatIf.Database.Tables
 
         public string Content { get; set; }
         public bool IsRead { get; set; }
+        public Guid PlayerToReadAnswerId { get; set; }
     }
 }

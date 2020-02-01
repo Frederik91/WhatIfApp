@@ -9,13 +9,5 @@ namespace WhatIf.Web.Components.QuestionAnswers
     {
         [Parameter]
         public ReadAnswerModel Answer { get; set; }
-
-
-        [Parameter] public EventCallback OnNextQuestion { get; set; }
-
-        protected Task NextQuestion()
-        {
-            return OnNextQuestion.InvokeAsync(null);
-        }
     }
 }

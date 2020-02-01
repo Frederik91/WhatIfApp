@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using AutoMapper;
 using WhatIf.Core.Models;
+using WhatIf.Database.Concepts;
 using WhatIf.Database.Tables;
 
 namespace WhatIf.Database
@@ -15,6 +16,7 @@ namespace WhatIf.Database
             CreateMap<SessionTbl, SessionDto>().ReverseMap();
             CreateMap<QuestionTbl, QuestionDto>().ReverseMap();
             CreateMap<AnswerTbl, AnswerDto>().ReverseMap();
+            CreateMap<QuestionAnswerDto, QuestionAnswerCpt>().ReverseMap();
         }
     }
 }

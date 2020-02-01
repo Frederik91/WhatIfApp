@@ -32,15 +32,20 @@ namespace WhatIf.Database.Services.Answers
             return _commandExecutor.ExecuteAsync(new AssignAnswersAndQuestionsCommand { SessionId = sessionId });
         }
 
-        public async Task<List<QuestionAnswerDto>> GetQuestionAnswersFromPlayer(Guid playerId)
+        public async Task<List<QuestionAnswerDto>> GetQuestionAnswersForPlayer(Guid playerId)
         {
-            var questionAnswerCpt = await _queryExecutor.ExecuteAsync(new GetQuestionAnswersByPlayer { PlayerId = playerId });
+            var questionAnswerCpt = await _queryExecutor.ExecuteAsync(new GetQuestionAnswersByPlayerQuery { PlayerId = playerId });
             return _mapper.Map<List<QuestionAnswerDto>>(questionAnswerCpt);
         }
 
         public Task MarkAnswerAsRead(Guid answerId)
         {
             return _commandExecutor.ExecuteAsync(new MarkAnswerAsReadCommand { AnswerId = answerId });
+        }
+
+        public Task<int> GetRemainingAnswerCount(Guid sessionId)
+        {
+            return _queryExecutor.ExecuteAsync(new RemainingAnswersCountQuery {SessionId = sessionId});
         }
     }
 }

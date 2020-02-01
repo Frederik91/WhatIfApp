@@ -8,5 +8,9 @@ namespace WhatIf.Web.Components.QuestionAnswers
         [Parameter]
         public ReadQuestionModel Question { get; set; }
 
+        protected override void OnParametersSet()
+        {
+            base.OnParametersSet();
+        }
     }
 }

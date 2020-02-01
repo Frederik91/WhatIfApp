@@ -8,6 +8,7 @@ using WhatIf.Database;
 using LightInject;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.EntityFrameworkCore;
 using WhatIf.Web.Helpers;
 using WhatIf.Web.Hubs;
 
@@ -32,6 +33,11 @@ namespace WhatIf.Web
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddProtectedBrowserStorage();
+            services.AddDbContext<WhatIfDbContext>(options =>
+            {
+                var connectionString = Configuration.GetConnectionString("WhatIfDatabase");
+                options.UseSqlite(connectionString);
+            });
 
 
 
@@ -48,6 +54,13 @@ namespace WhatIf.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using var context = scope.ServiceProvider.GetService<WhatIfDbContext>();
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

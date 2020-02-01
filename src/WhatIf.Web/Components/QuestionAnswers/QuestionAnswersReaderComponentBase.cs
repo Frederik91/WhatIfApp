@@ -19,8 +19,12 @@ namespace WhatIf.Web.Components.QuestionAnswers
         private bool _readAnswer;
         private bool _showStartupScreen;
         private QuestionAnswerModel _current;
+        private PlayerDto _player;
+        private bool _playerIsFinished;
+        private bool _gameHasEnded;
         [Inject] private IAnswerService AnswerService { get; set; }
         [Inject] private IQuestionService QuestionService { get; set; }
+        [Inject] private IPlayerService PlayerService { get; set; }
 
         [Parameter] public Guid PlayerId { get; set; }
         [Parameter] public HubConnection Connection { get; set; }
@@ -43,6 +47,11 @@ namespace WhatIf.Web.Components.QuestionAnswers
             set { _showStartupScreen = value; StateHasChanged(); }
         }
 
+        public bool PlayerIsFinished
+        {
+            get => _playerIsFinished;
+            set { _playerIsFinished = value; StateHasChanged(); }
+        }
 
         public List<QuestionAnswerModel> QuestionAnswers { get; set; }
 
@@ -52,19 +61,54 @@ namespace WhatIf.Web.Components.QuestionAnswers
             set { _current = value; StateHasChanged(); }
         }
 
+        public PlayerDto Player
+        {
+            get => _player;
+            set { _player = value; StateHasChanged(); }
+        }
+
+        public bool GameHasEnded
+        {
+            get => _gameHasEnded;
+            set { _gameHasEnded = value; StateHasChanged(); }
+        }
+
         protected override async Task OnParametersSetAsync()
         {
-            _readAnswerHandler = Connection.On<Guid>("ReadAnswer", OnReadAnswer);
-            var questionAnswers = await AnswerService.GetQuestionAnswersFromPlayer(PlayerId);
+            _readAnswerHandler = Connection.On<Guid>("NextAnswer", OnReadAnswer);
+            _readAnswerHandler = Connection.On("GameEnded", OnGameEnded);
+            Player = await PlayerService.Get(PlayerId);
+            var questionAnswers = await AnswerService.GetQuestionAnswersForPlayer(PlayerId);
             QuestionAnswers = new List<QuestionAnswerModel>();
             foreach (var questionAnswer in questionAnswers)
             {
-                QuestionAnswers.Add(new QuestionAnswerModel { Question = new ReadQuestionModel { Content = questionAnswer.Question.Content }, Answer = new ReadAnswerModel { Id = questionAnswer.Answer.Id, Content = questionAnswer.Question.Content } });
+                QuestionAnswers.Add(new QuestionAnswerModel
+                {
+                    Question = new ReadQuestionModel
+                    {
+                        Content = questionAnswer.Question.Content,
+                        AssignedAnswerId = questionAnswer.Question.AssignedAnswerId,
+                        Id = questionAnswer.Question.Id,
+                    },
+                    Answer = new ReadAnswerModel
+                    {
+                        Id = questionAnswer.Answer.Id,
+                        Content = questionAnswer.Question.Content
+                    }
+                });
             }
 
             ShowStartupScreen = true;
         }
 
+        private void OnGameEnded()
+        {
+            PlayerIsFinished = false;
+            ReadAnswer = false;
+            ReadQuestion = false;
+            ShowStartupScreen = false;
+            GameHasEnded = true;
+        }
 
         private void OnReadAnswer(Guid answerId)
         {
@@ -72,8 +116,18 @@ namespace WhatIf.Web.Components.QuestionAnswers
             if (Current is null)
                 return;
 
+            if (Current.Answer.IsRead)
+            {
+                PlayerIsFinished = true;
+                ReadAnswer = false;
+                ReadQuestion = false;
+                ShowStartupScreen = false;
+                return;
+            }
+
             ReadAnswer = true;
             ReadQuestion = false;
+            ShowStartupScreen = false;
         }
 
         public void Dispose()
@@ -83,19 +137,27 @@ namespace WhatIf.Web.Components.QuestionAnswers
 
         protected async Task Start()
         {
+            ShowStartupScreen = false;
             ReadQuestion = true;
             ReadAnswer = false;
             Current = QuestionAnswers.First();
-            await Connection.SendAsync("RequestNextAnswer", Current.Question.AssignedAnswerId);
+            await Connection.SendAsync("RequestNextAnswer", _player.SessionId, Current.Question.AssignedAnswerId);
         }
 
         protected async Task OnNextQuestion()
         {
             ReadAnswer = false;
             ReadQuestion = true;
-            await Connection.SendAsync("RequestNextAnswer", Current.Question.AssignedAnswerId);
+            Current.Question.IsRead = true;
+            Current.Answer.IsRead = true;
             await AnswerService.MarkAnswerAsRead(Current.Answer.Id);
             await QuestionService.MarkQuestionAsRead(Current.Question.Id);
+            var remainingAnswers = await AnswerService.GetRemainingAnswerCount(_player.SessionId);
+            if (remainingAnswers > 0)
+                await Connection.SendAsync("RequestNextAnswer", _player.SessionId, Current.Question.AssignedAnswerId);
+            else
+                await Connection.SendAsync("NotifyGameEnded", _player.SessionId);
+
         }
     }
 }

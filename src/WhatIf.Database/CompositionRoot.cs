@@ -33,11 +33,11 @@ namespace WhatIf.Database
                 x.ConstructServicesUsing(t => Create(t, factory));
             })));
 
-            using var _ = factory.BeginScope();
-            using var context = factory.GetInstance<WhatIfDbContext>();
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
-            context.Database.Migrate();
+            //using var _ = factory.BeginScope();
+            //using var context = factory.GetInstance<WhatIfDbContext>();
+            //context.Database.EnsureDeleted();
+            //context.Database.EnsureCreated();
+            //context.Database.Migrate();
         }
 
 

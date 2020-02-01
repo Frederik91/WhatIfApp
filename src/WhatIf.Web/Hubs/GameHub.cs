@@ -57,7 +57,12 @@ namespace WhatIf.Web.Hubs
 
         public Task RequestNextAnswer(Guid gameId, Guid answerId)
         {
-            return Clients.Group(gameId.ToString()).SendAsync("NextAnswer", answerId);
+            return Clients.GroupExcept(gameId.ToString(), Context.ConnectionId).SendAsync("NextAnswer", answerId);
+        }
+
+        public Task NotifyGameEnded(Guid gameId)
+        {
+            return Clients.Group(gameId.ToString()).SendAsync("GameEnded");
         }
     }
 }

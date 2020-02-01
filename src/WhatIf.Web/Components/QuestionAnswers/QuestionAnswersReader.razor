@@ -15,10 +15,22 @@
     }
 </style>
 
-@if (ShowStartupScreen)
+@if (GameHasEnded)
 {
-    <h1>You are ready to read questions and answers, click start to begin.</h1>
-    <MatButton onclick="@Start()">Start</MatButton>
+    <h1>The round is over</h1>
+}
+else if (ShowStartupScreen)
+{
+    @if (Player.IsGameMaster)
+    {
+        <h1>You are ready to read questions and answers, click start to begin.</h1>
+        <MatButton OnClick="@(async x => await Start())">Start</MatButton>
+    }
+    else
+    {
+        <h1>Waiting for the round to start.</h1>
+    }
+
 }
 else if (Current is null)
 {
@@ -26,10 +38,15 @@ else if (Current is null)
 }
 else if (ReadQuestion)
 {
-    <QuestionReader></QuestionReader>
+    <QuestionReader Question="@Current.Question"></QuestionReader>
 }
 else if (ReadAnswer)
 {
-    <AnswerReader></AnswerReader>
+    <AnswerReader Answer="@Current.Answer"></AnswerReader>
+    <MatButton OnClick="@(async x => await OnNextQuestion())">Next question</MatButton>
 }
-<MatButton OnClick="@(async x => await OnNextQuestion())">Submit</MatButton>
+else if (PlayerIsFinished)
+{
+    <h1>You have finished this round.</h1>
+}
+
