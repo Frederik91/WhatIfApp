@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CQRS.Command.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using MoreLinq;
 using WhatIf.Database.Extensions;
 using WhatIf.Database.Tables;
 
@@ -23,25 +24,19 @@ namespace WhatIf.Database.Services.Questions
         {
             var playerQuestions = await _dbContext.Players.Where(x => x.SessionId == command.SessionId).Join(_dbContext.Questions,
                 player => player.Id, question => question.CreatedByPlayerId,
-                (player, question) => new {PlayerId = player.Id, Question = question}).ToListAsync(cancellationToken);
+                (player, question) => new { PlayerId = player.Id, Question = question }).ToListAsync(cancellationToken);
 
             playerQuestions.Shuffle();
+            var playerIds = playerQuestions.Select(x => x.PlayerId).Distinct().ToList();
+            var questions = playerQuestions.Select(x => x.Question).ToList();
 
-            foreach (var playerQuestion in playerQuestions)
+            for (var i = 0; i < playerIds.Count; i++)
             {
-                var otherQuestion = playerQuestions.First(x =>
-                    x.PlayerId != playerQuestion.PlayerId && !x.Question.AssignedToPlayerId.HasValue);
-                otherQuestion.Question.AssignedToPlayerId = playerQuestion.PlayerId;
-                //try
-                //{
-                //    _dbContext.Entry(otherQuestion.Question).Property(x => x.AssignedToPlayerId).IsModified = true;
-                //}
-                //catch (Exception e)
-                //{
-                    
-                //}
-
-                //_dbContext.Update(otherQuestion.Question);
+                var playerId = playerIds[i];
+                var nextPlayerId = playerIds[i + 1 < playerIds.Count ? i + 1 : 0];
+                var questionsToAssign = questions.Where(x => x.CreatedByPlayerId == nextPlayerId);
+                foreach (var question in questionsToAssign)
+                    question.AssignedToPlayerId = playerId;
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);

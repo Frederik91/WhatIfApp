@@ -13,6 +13,7 @@
     <PackageReference Include="CQRS.Command.Abstractions" Version="1.0.0" />
     <PackageReference Include="CQRS.LightInject" Version="1.1.0" />
     <PackageReference Include="CQRS.Query.Abstractions" Version="1.0.0" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
   </ItemGroup>
 
   <ItemGroup>
