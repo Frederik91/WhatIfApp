@@ -25,6 +25,7 @@ namespace WhatIf.Web.Components.QuestionAnswers
         [Inject] private IAnswerService AnswerService { get; set; }
         [Inject] private IQuestionService QuestionService { get; set; }
         [Inject] private IPlayerService PlayerService { get; set; }
+        [Inject] private ISessionService SessionService { get; set; }
 
         [Parameter] public Guid PlayerId { get; set; }
         [Parameter] public HubConnection Connection { get; set; }
@@ -93,7 +94,7 @@ namespace WhatIf.Web.Components.QuestionAnswers
                     Answer = new ReadAnswerModel
                     {
                         Id = questionAnswer.Answer.Id,
-                        Content = questionAnswer.Question.Content
+                        Content = questionAnswer.Answer.Content
                     }
                 });
             }
@@ -101,13 +102,15 @@ namespace WhatIf.Web.Components.QuestionAnswers
             ShowStartupScreen = true;
         }
 
-        private void OnGameEnded()
+        private async Task OnGameEnded()
         {
             PlayerIsFinished = false;
             ReadAnswer = false;
             ReadQuestion = false;
             ShowStartupScreen = false;
             GameHasEnded = true;
+            if (Player.IsGameMaster)
+                await SessionService.MarkSessionFinished(_player.SessionId);
         }
 
         private async Task OnReadAnswer(Guid answerId)

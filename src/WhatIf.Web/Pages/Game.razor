@@ -23,25 +23,25 @@
 
 @if (IsCreatingQuestions)
 {
-    <QuestionsCreator QuestionCount="@_session.CardAmount" OnSubmit="@(async x => await SubmitQuestions(x))"></QuestionsCreator>
+<QuestionsCreator QuestionCount="@_session.CardAmount" OnSubmit="@(async x => await SubmitQuestions(x))"></QuestionsCreator>
 }
 else if (IsWaitingForOtherPlayers)
 {
-    <h3 class="mat-subtitle1">Waiting for remaining players</h3>
+<h3 class="mat-subtitle1">Waiting for remaining players</h3>
 }
 else if (IsAnsweringQuestions)
 {
-    <AnswersCreator PlayerId="@_player.Id" OnSubmit="@(async x => await SubmitAnswers(x))"></AnswersCreator>
+<AnswersCreator PlayerId="@_player.Id" OnSubmit="@(async x => await SubmitAnswers(x))"></AnswersCreator>
 }
 
 else if (ShowReadingRound)
 {
-    <QuestionAnswersReader PlayerId="@_player.Id" Connection="@_connection"></QuestionAnswersReader>
+<QuestionAnswersReader PlayerId="@_player.Id" Connection="@_connection"></QuestionAnswersReader>
 }
 else
 {
-    <h3 class="mat-subtitle1">Loading game</h3>
-    <MatProgressBar Indeterminate="true"></MatProgressBar>
+<h3 class="mat-subtitle1">Loading game</h3>
+<MatProgressBar Indeterminate="true"></MatProgressBar>
 }
 
 
@@ -95,11 +95,18 @@ else
         {
             NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
             var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
+            if (state is null)
+            {
+                NavigationManager.NavigateTo("/");
+                return;
+            }
+
             _player = await PlayerService.Get(state.PlayerId);
             _session = await SessionService.Get(state.SessionId);
+
             if (_session is null || _player is null)
             {
-                NavigationManager.NavigateTo("error");
+                NavigationManager.NavigateTo("/");
                 return;
             }
 
@@ -108,8 +115,17 @@ else
 
             _players.AddRange(playersInSession);
             await ConnectToSignalRHub(_session.Id, _player.Id);
-            IsCreatingQuestions = true;
 
+            if (!_player.HasSubmittedQuestions)
+                IsCreatingQuestions = true;
+            else if (_player.HasSubmittedQuestions && !_session.CreateQuestionsRoundIsCompleted)
+                IsWaitingForOtherPlayers = true;
+            else if (!_player.HasSubmittedAnswers && _session.CreateQuestionsRoundIsCompleted)
+                IsAnsweringQuestions = true;
+            else if (_player.HasSubmittedAnswers && !_session.CreateAnswersRoundIsCompleted)
+                IsWaitingForOtherPlayers = true;
+            else if (_session.ReadingRoundHasStarted)
+                ShowReadingRound = true;
         }
         finally
         {
@@ -152,6 +168,7 @@ else
     private async Task AssignQuestionsAndStartAnswering()
     {
         await QuestionService.AssignQuestions(_session.Id);
+        await SessionService.MarkCreateQuestionsRoundFinished(_session.Id);
         await _connection.SendAsync("NotifyStartAnsweringQuestions", _session.Id);
     }
 
@@ -165,7 +182,9 @@ else
 
     private async Task AssignAnswersAndQuestions()
     {
+        await SessionService.MarkCreateAnswersRoundFinished(_session.Id);
         await AnswerService.AssignAnswersAndQuestions(_session.Id);
+        await SessionService.MarkReadingRoundStarted(_session.Id);
         await _connection.SendAsync("NotifyReadingRoundStart", _session.Id);
     }
 

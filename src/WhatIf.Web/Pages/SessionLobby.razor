@@ -17,54 +17,61 @@
 
 @if (_player is null || _session is null)
 {
-    <h3 class="mat-subtitle1">Joining session</h3>
-    <MatProgressBar Progress="@Progress"></MatProgressBar>
+<h3 class="mat-subtitle1">Joining session</h3>
+<MatProgressBar Progress="@Progress"></MatProgressBar>
 }
 else
 {
-    @if (IsStarting)
+@if (IsStarting)
     {
-        <h3 class="mat-subtitle1">Game is starting</h3>
-        <MatProgressBar Indeterminate="true"></MatProgressBar>
+<h3 class="mat-subtitle1">Game is starting</h3>
+<MatProgressBar Indeterminate="true"></MatProgressBar>
     }
     else
     {
-        <h1>Game @_session.Number</h1>
-        <h2>Welcome @_player.Name. Waiting for @_session.Name to start</h2>
+<h1>Game @_session.Number</h1>
+<h2>Welcome @_player.Name. Waiting for @_session.Name to start</h2>
 
-        @if (_player.IsGameMaster)
+    @if (_player.IsGameMaster)
+    {
+        @if (_players.Count > 1)
         {
             <MatButton OnClick="@Start">Start</MatButton>
-            <p>
-                <MatNumericUpDownField Label="Card amount"
-                                       @bind-Value=@CardAmount
-                                       DecimalPlaces=0
-                                       Minimum=1 Maximum=10>
-                </MatNumericUpDownField>
-            </p>
         }
         else
         {
-            <h6 class="mat-h6">Card amount: @CardAmount</h6>
+            <h3>Not enough players to start</h3>
+        }
+        <p>
+            <MatNumericUpDownField Label="Card amount"
+                                   @bind-Value=@CardAmount
+                                   DecimalPlaces=0
+                                   Minimum=1 Maximum=10>
+            </MatNumericUpDownField>
+        </p>
+        }
+        else
+        {
+<h6 class="mat-h6">Card amount: @CardAmount</h6>
         }
 
-        <h4>Players in lobby</h4>
-        <MatList>
-            @foreach (var player in _players)
+<h4>Players in lobby</h4>
+<MatList>
+    @foreach (var player in _players)
             {
-                <MatListItem>
-                    @if (player.IsGameMaster)
+    <MatListItem>
+        @if (player.IsGameMaster)
                     {
-                        <MatH6 style="font-weight: bold">@player.Name (Game master)</MatH6>
+        <MatH6 style="font-weight: bold">@player.Name (Game master)</MatH6>
                     }
                     else
                     {
-                        <MatH6>@player.Name</MatH6>
+        <MatH6>@player.Name</MatH6>
                     }
 
-                </MatListItem>
+    </MatListItem>
             }
-        </MatList>
+</MatList>
     }
 
 }
@@ -125,17 +132,37 @@ else
         {
             NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
             var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
+            if (state is null)
+            {
+                NavigationManager.NavigateTo("(/");
+                return;
+            }
+
+
             Progress = 0.2;
             _player = await PlayerService.Get(state.PlayerId);
             Progress = 0.4;
             _session = await SessionService.Get(state.SessionId);
-            Progress = 0.6;
-            if (_session is null || _player is null)
+            if (_player is null || _session is null || _session.IsFinished)
             {
-                NavigationManager.NavigateTo("error");
+                NavigationManager.NavigateTo("/");
                 return;
             }
+
+            Progress = 0.6;
             SetCardAmountWithoutNotification(_session.CardAmount);
+
+            if (_session.IsFinished)
+            {
+                NavigationManager.NavigateTo("/");
+                return;
+            }
+            if (_session.StartTime > default(DateTimeOffset))
+            {
+                NavigationManager.NavigateTo("game");
+                return;
+            }
+
             var playersInSession = await PlayerService.GetPlayersInSession(_session.Id);
             Progress = 0.8;
 
@@ -157,6 +184,8 @@ else
 
     private async void NavigationManagerOnLocationChanged(object sender, LocationChangedEventArgs e)
     {
+        if (_connection is null || _session is null || _player is null)
+            return;
         await _connection.InvokeAsync("LeaveGame", _session.Id, _player.Id);
     }
 

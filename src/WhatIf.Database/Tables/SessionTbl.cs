@@ -10,5 +10,8 @@ namespace WhatIf.Database.Tables
         public bool IsFinished { get; set; }
         public string Name { get; set; }
         public int CardAmount { get; set; }
+        public bool CreateQuestionsRoundIsCompleted { get; set; }
+        public bool CreateAnswersRoundIsCompleted { get; set; }
+        public bool ReadingRoundHasStarted { get; set; }
     }
 }

@@ -27,9 +27,29 @@ namespace WhatIf.Database.Services.Sessions
             return sessionTbl is null ? null : _mapper.Map<SessionDto>(sessionTbl);
         }
 
-        public async Task Start(Guid sessionId, int cardAmount)
+        public Task Start(Guid sessionId, int cardAmount)
         {
-            await _commandExecutor.ExecuteAsync(new StartSessionCommand { SessionId = sessionId, CardAmount = cardAmount });
+            return _commandExecutor.ExecuteAsync(new StartSessionCommand { SessionId = sessionId, CardAmount = cardAmount });
+        }
+
+        public Task MarkCreateQuestionsRoundFinished(Guid sessionId)
+        {
+            return _commandExecutor.ExecuteAsync(new MarkCreateQuestionsRoundCompleteCommand { SessionId = sessionId });
+        }
+
+        public Task MarkCreateAnswersRoundFinished(Guid sessionId)
+        {
+            return _commandExecutor.ExecuteAsync(new MarkCreateAnswersRoundCompleteCommand { SessionId = sessionId });
+        }
+
+        public Task MarkReadingRoundStarted(Guid sessionId)
+        {
+            return _commandExecutor.ExecuteAsync(new MarkReadingRoundStartedCommand { SessionId = sessionId });
+        }
+
+        public Task MarkSessionFinished(Guid sessionId)
+        {
+            return _commandExecutor.ExecuteAsync(new MarkSessionFinishedCommand { SessionId = sessionId });
         }
 
         public async Task<SessionDto> Get(int number)
@@ -43,5 +63,7 @@ namespace WhatIf.Database.Services.Sessions
             var sessionTbl = await _queryExecutor.ExecuteAsync(new CreateSessionQuery { Name = name });
             return _mapper.Map<SessionDto>(sessionTbl);
         }
+
+
     }
 }
