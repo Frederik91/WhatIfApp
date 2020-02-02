@@ -35,7 +35,7 @@ namespace WhatIf.Core.Tests
         }
 
         [Theory, Scoped, InjectData]
-        public async Task PlayGame_VariusPlayerCount(ISessionService sessionService, IPlayerService playerService, IQuestionService questionService, IAnswerService answerService)
+        public async Task PlayGame_VariousPlayerCount(ISessionService sessionService, IPlayerService playerService, IQuestionService questionService, IAnswerService answerService)
         {
             for (var i = 2; i <= 11; i++)
             {
@@ -43,7 +43,7 @@ namespace WhatIf.Core.Tests
             }
         }
 
-        public async Task PlayGame(ISessionService sessionService, IPlayerService playerService, IQuestionService questionService, IAnswerService answerService, int playerAndCardCount)
+        private async Task PlayGame(ISessionService sessionService, IPlayerService playerService, IQuestionService questionService, IAnswerService answerService, int playerAndCardCount)
         {
             var session = await sessionService.Create("Test");
 
@@ -75,14 +75,14 @@ namespace WhatIf.Core.Tests
             var answerIndex = 0;
             foreach (var player in players)
             {
-                var answers = await questionService.GetQuestionsToAnswer(player.Id);
-                Assert.Equal(session.CardAmount, answers.Count);
+                var questions = await questionService.GetQuestionsToAnswer(player.Id);
+                Assert.Equal(session.CardAmount, questions.Count);
 
-                await answerService.SubmitAnswers(player.Id, answers.Select(x =>
+                await answerService.SubmitAnswers(player.Id, questions.Select(x =>
                 {
                     var request = new SubmitAnswerRequest
                     {
-                        Answer = answerIndex.ToString(),
+                        Answer = x.Content,
                         QuestionId = x.Id
                     };
                     answerIndex++;
@@ -106,8 +106,10 @@ namespace WhatIf.Core.Tests
             while (true)
             {
                 var answer = allQuestionAnswerDtos.First(x => x.Answer.Id == question.AssignedAnswerId);
+                Assert.NotEqual(answer.Answer.Content, question.Content);
                 question = answer.Question;
                 Assert.DoesNotContain(question.Id, readQuestions);
+
                 readQuestions.Add(question.Id);
                 if (readQuestions.Count == allQuestionAnswerDtos.Count)
                     break;
