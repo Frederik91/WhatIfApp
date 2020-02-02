@@ -17,7 +17,7 @@ namespace WhatIf.Web.Components.Questions
             Questions = new List<CreateQuestionModel>();
             for (var i = 1; i <= QuestionCount; i++)
             {
-                Questions.Add(new CreateQuestionModel { Name = "Question " + i, Content = "What happens if " });
+                Questions.Add(new CreateQuestionModel { Title = "Question " + i, Content = "What happens if " });
             }
         }
 

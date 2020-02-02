@@ -13,12 +13,9 @@
         margin: 0px;
     }
 </style>
-<MatTabGroup>
-    @foreach (var answer in Answers)
-    {
-        <MatTab Label="@answer.Title">
-            <AnswerCreator CreateAnswer="@answer"></AnswerCreator>
-        </MatTab>
-    }
-</MatTabGroup>
+@foreach (var answer in Answers)
+{
+    <h3 style="margin-bottom: 5px">@answer.Title</h3>
+    <AnswerCreator CreateAnswer="@answer"></AnswerCreator>
+}
 <MatButton OnClick="@(async x => await Submit())">Submit</MatButton>

@@ -2,7 +2,7 @@
 {
     public class CreateQuestionModel
     {
-        public string Name { get; set; }
+        public string Title { get; set; }
         public string Content { get; set; }
     }
 }

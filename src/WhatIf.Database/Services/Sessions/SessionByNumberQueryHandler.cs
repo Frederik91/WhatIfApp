@@ -21,7 +21,7 @@ namespace WhatIf.Database.Services.Sessions
 
         public Task<SessionTbl> HandleAsync(SessionByNumberQuery query, CancellationToken cancellationToken = new CancellationToken())
         {
-            return _dbContext.Sessions.FirstOrDefaultAsync(x => !x.IsFinished && x.Number == query.Number, cancellationToken);
+            return _dbContext.Sessions.AsNoTracking().FirstOrDefaultAsync(x => !x.IsFinished && x.Number == query.Number, cancellationToken);
         }
     }
 }
