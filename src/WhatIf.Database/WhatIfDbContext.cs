@@ -26,7 +26,6 @@ namespace WhatIf.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
         }
     }
 }

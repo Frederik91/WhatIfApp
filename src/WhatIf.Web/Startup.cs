@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WhatIf.Database;
 using LightInject;
+using MatBlazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,15 @@ namespace WhatIf.Web
         {
             services.AddMvc();
             services.AddSignalR();//.AddAzureSignalR(Configuration["Azure:SignalR:ConnectionString"]);
+            services.AddMatToaster(config =>
+            {
+                config.Position = MatToastPosition.TopRight;
+                config.PreventDuplicates = true;
+                config.NewestOnTop = true;
+                config.ShowCloseButton = true;
+                config.MaximumOpacity = 95;
+                config.VisibleStateDuration = 5000;
+            });
 
             services.AddRazorPages();
             services.AddServerSideBlazor();

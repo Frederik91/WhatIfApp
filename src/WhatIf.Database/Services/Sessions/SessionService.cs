@@ -58,9 +58,9 @@ namespace WhatIf.Database.Services.Sessions
             return sessionTbl is null ? null : _mapper.Map<SessionDto>(sessionTbl);
         }
 
-        public async Task<SessionDto> Create(string name)
+        public async Task<SessionDto> Create()
         {
-            var sessionTbl = await _queryExecutor.ExecuteAsync(new CreateSessionQuery { Name = name });
+            var sessionTbl = await _queryExecutor.ExecuteAsync(new CreateSessionQuery());
             return _mapper.Map<SessionDto>(sessionTbl);
         }
 

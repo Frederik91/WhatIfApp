@@ -5,6 +5,6 @@ namespace WhatIf.Database.Services.Sessions
 {
     public class CreateSessionQuery : IQuery<SessionTbl>
     {
-        public string Name { get; set; }
+
     }
 }

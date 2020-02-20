@@ -10,31 +10,62 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedSessionStorage ProtectedSessionStore
 
+<div class="container-main">
+    <div id="bg"></div>
+    <div id="header">
+        <h1>What if?!</h1>
+        <h5>The game that allows you to ask the real questions!</h5>
+    </div>
 
-<h1>Join session</h1>
+    @if (_existingSession != null)
+    {
+        <div id="rejoin">
+            <h5>You are already in a game!</h5>
+            <MatButton OnClick="@Rejoin">Rejoin</MatButton>
+        </div>
+    }
 
-@if (_existingSession != null)
-{
-    <p>You are already on a game, click here to rejoin</p>
-    <MatButton OnClick="@Rejoin">Rejoin</MatButton>
-}
-<p></p>
-<p><MatTextField @bind-Value="@_name" Label="Nickname"></MatTextField></p>
-<p><MatTextField @bind-Value="@_sessionNumber" Label="Game id"></MatTextField></p>
+    <div id="join">
+        <h3>Join game</h3>
+        @if (_sessionByPin is null)
+        {
+            <MatTextField @bind-Value="@_sessionNumber" Outlined="true" Dense="true" PlaceHolder="Game number"></MatTextField>
+            <MatButton OnClick="@Join">Enter</MatButton>
+        }
+        else
+        {
+            <MatTextField @bind-Value="@_name" Label="Nickname"></MatTextField>
+            @if (!string.IsNullOrEmpty(_name))
+            {
+                <MatButton OnClick="@CreatePlayer">Continue</MatButton>
+            }
+            else
+            {
+                <MatButton Disabled="true">Continue</MatButton>
+            }
+        }
 
-@if (_sessionNotFound)
-{
-    <p>Session not found</p>
-}
+
+        @if (_sessionNotFound)
+        {
+            <p>Session not found</p>
+        }
+    </div>
+    <div id="create">
+        <MatButton OnClick="@NavigateToCreate">Create new</MatButton>
+    </div>
+</div>
 
 
-<MatButton OnClick="@Join">Join</MatButton>
+
+
 
 @code {
-    private int _sessionNumber = 0;
+    private string _sessionNumber;
     private string _name = string.Empty;
     private bool _sessionNotFound;
     private SessionDto _existingSession;
+    private SessionDto _sessionByPin;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -48,31 +79,44 @@
             _existingSession = session;
             StateHasChanged();
         }
-        
+
     }
 
 
     private void Rejoin()
     {
-        NavigationManager.NavigateTo($"sessionlobby");
+        NavigationManager.NavigateTo("sessionlobby");
     }
 
     private async Task Join()
     {
         _sessionNotFound = false;
-        var session = await SessionService.Get(_sessionNumber);
-        if (session is null)
+        if (!int.TryParse(_sessionNumber, out var num))
         {
             _sessionNotFound = true;
             return;
         }
+        _sessionByPin = await SessionService.Get(num);
+        if (_sessionByPin is null)
+        {
+            _sessionNotFound = true;
+            return;
+        }
+    }
 
-        var player = await PlayerService.Create(_name, session.Id, false);
+    private async Task CreatePlayer()
+    {
+        var player = await PlayerService.Create(_name, _sessionByPin.Id, false);
 
-        var playerSessionState = new SessionPlayerState { SessionId = session.Id, PlayerId = player.Id, IsGameMaster = true };
+        var playerSessionState = new SessionPlayerState { SessionId = _sessionByPin.Id, PlayerId = player.Id, IsGameMaster = false };
         await ProtectedSessionStore.SetAsync("state", playerSessionState);
 
 
         NavigationManager.NavigateTo("sessionlobby");
+    }
+
+    private void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo("createsession");
     }
 }
