@@ -15,72 +15,93 @@
 
 @implements IAsyncDisposable
 
-@if (_player is null || _session is null)
-{
-    <h3 class="mat-subtitle1">Joining session</h3>
-    <MatProgressBar Progress="@Progress"></MatProgressBar>
-}
-else
-{
-    @if (IsStarting)
+<div class="container-lobby">
+    @if (_player is null || _session is null)
     {
-        <h3 class="mat-subtitle1">Game is starting</h3>
-        <MatProgressBar Indeterminate="true"></MatProgressBar>
-    }
-    else if (!(_players.FirstOrDefault(x => x.IsGameMaster) is { } gameMaster))
-    {
-        <h3>Game master has left the building.</h3>
-        <h6>Wait for game master to rejoin or start a new round</h6>
+        <div class="loader">
+            <h3 class="mat-subtitle1">Joining session</h3>
+            <MatProgressBar Progress="@Progress"></MatProgressBar>
+        </div>
     }
     else
     {
-        <h1>Game @_session.Number</h1>
-        <h2>Welcome @_player.Name. Waiting for @gameMaster.Name to start the game</h2>
-
-        @if (_player.IsGameMaster)
+        @if (IsStarting)
         {
-            @if (_players.Count > 1)
-            {
-                <MatButton OnClick="@Start">Start</MatButton>
-            }
-            else
-            {
-                <h3>Not enough players to start</h3>
-            }
-            <p>
-                <MatNumericUpDownField Label="Card amount"
-                                       @bind-Value=@CardAmount
-                                       DecimalPlaces=0
-                                       Minimum=1 Maximum=10>
-                </MatNumericUpDownField>
-            </p>
+            <div class="loader">
+                <h3 class="mat-subtitle1">Game is starting</h3>
+                <MatProgressBar Indeterminate="true"></MatProgressBar>
+            </div>
+        }
+        else if (!(_players.FirstOrDefault(x => x.IsGameMaster) is { } gameMaster))
+        {
+            <div id="master-missing"></div>
+            <h3>Game master has left the building.</h3>
+            <h6>Wait for game master to rejoin or start a new round</h6>
         }
         else
         {
-            <h6 class="mat-h6">Card amount: @CardAmount</h6>
-        }
+            <div id="header">
+                <h2>Welcome @_player.Name!</h2>
+                @if (!_player.IsGameMaster)
+                {
+                    <h5>Waiting for @gameMaster.Name to start the game</h5>
+                }
 
-        <h4>Players in lobby</h4>
-        <MatList>
-            @foreach (var player in _players)
+            </div>
+            <div id="pin">
+                <h1>PIN: @_session.Number</h1>
+            </div>
+            @if (_player.IsGameMaster)
             {
-                <MatListItem>
-                    @if (player.IsGameMaster)
+                <div id="settings-master">
+                    @if (_players.Count > 1)
                     {
-                        <MatH6 style="font-weight: bold">@player.Name (Game master)</MatH6>
+                        <MatButton OnClick="@Start">Start</MatButton>
                     }
                     else
                     {
-                        <MatH6>@player.Name</MatH6>
+                        <h5>Not enough players to start</h5>
                     }
 
-                </MatListItem>
+                    <div class="card-count-field">
+                        <h5>Number of cards</h5>
+                       <MatButton id="down" OnClick="@(x => CardAmount--)">-</MatButton>
+                       <h4>@CardAmount</h4>
+                       <MatButton id="up" OnClick="@(x => CardAmount++)">+</MatButton>
+                    </div>
+                </div>
             }
-        </MatList>
+            else
+            {
+                <div id="settings-player">
+                    <h5>Number of cards</h5>
+                    <h4>@CardAmount</h4>
+                </div>
+            }
+
+            <div id="player-list">
+                <h4>Players in lobby</h4>
+                <MatList>
+                    @foreach (var player in _players)
+                    {
+                        <MatListItem>
+                            @if (player.IsGameMaster)
+                            {
+                                <MatH6 style="font-weight: bold">@player.Name (Game master)</MatH6>
+                            }
+                            else
+                            {
+                                <MatH6>@player.Name</MatH6>
+                            }
+
+                        </MatListItem>
+                    }
+                </MatList>
+            </div>
+        }
+
     }
-
-}
-
+</div>
 
 
 @code{
@@ -129,8 +150,11 @@ else
         NavigationManager.NavigateTo("game");
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+
         IsLoading = true;
         Progress = 0;
         try
@@ -238,6 +262,9 @@ else
 
     private async Task OnPlayerJoined(Guid playerId)
     {
+        if (_players.Any(x => x.Id == playerId))
+            return;
+
         var player = await PlayerService.Get(playerId);
         _players.Add(player);
         StateHasChanged();

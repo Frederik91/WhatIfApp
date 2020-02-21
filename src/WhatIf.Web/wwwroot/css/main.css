@@ -2,7 +2,15 @@ app {
   height: 100%;
 }
 
-.container-main {
+html,
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  height: 100%;
+  width: 100%;
+  background-color: #324454;
+}
+
+.container-index {
   height: 100%;
   width: 100%;
   color: #d8dbe2;
@@ -12,7 +20,6 @@ app {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  background-color: #324454;
   display: -ms-grid;
   display: grid;
   -ms-grid-rows: 30% auto 20%;
@@ -20,24 +27,16 @@ app {
       grid-template-areas: "head" "join" "rejoin" "footer";
 }
 
-.container-main #bg {
-  -webkit-clip-path: polygon(0 0, 75% 0%, 55% 100%, 0 100%);
-          clip-path: polygon(0 0, 75% 0%, 55% 100%, 0 100%);
-  background-color: #324454;
-  height: 100%;
-}
-
-.container-main #header {
+.container-index #header {
   -ms-grid-row: 1;
   -ms-grid-column: 1;
   grid-area: head;
   text-align: center;
   margin: 0 1em;
-  -ms-grid-column-align: center;
       justify-self: center;
 }
 
-.container-main #rejoin {
+.container-index #rejoin {
   -ms-grid-row: 3;
   -ms-grid-column: 1;
   grid-area: rejoin;
@@ -60,7 +59,7 @@ app {
   margin: 20px;
 }
 
-.container-main #rejoin h5 {
+.container-index #rejoin h5 {
   -ms-grid-column: 1;
   grid-column: 1;
   -ms-grid-column-align: center;
@@ -68,14 +67,14 @@ app {
   margin: 0;
 }
 
-.container-main #rejoin button {
+.container-index #rejoin button {
   margin: 0 0 0 5px;
   padding: 0;
   -ms-grid-column: 2;
   grid-column: 2;
 }
 
-.container-main #join {
+.container-index #join {
   -ms-grid-row: 2;
   -ms-grid-column: 1;
   grid-area: join;
@@ -100,7 +99,7 @@ app {
   margin: 20px;
 }
 
-.container-main #join h3 {
+.container-index #join h3 {
   -ms-grid-row: 1;
   grid-row: 1;
   margin-bottom: 15px;
@@ -109,22 +108,22 @@ app {
   grid-column: 1 / 4;
 }
 
-.container-main #join .mdc-floating-label {
+.container-index #join .mdc-floating-label {
   background-color: #d8dbe2;
 }
 
-.container-main #join .mdc-text-field__input {
+.container-index #join .mdc-text-field__input {
   text-align: center;
 }
 
-.container-main #join .mdc-text-field {
+.container-index #join .mdc-text-field {
   -ms-grid-row: 2;
   grid-row: 2;
   -ms-grid-column: 2;
   grid-column: 2;
 }
 
-.container-main #join button {
+.container-index #join button {
   -ms-grid-row: 2;
   grid-row: 2;
   margin: 0 0 0 5px;
@@ -133,19 +132,19 @@ app {
   grid-column: 3;
 }
 
-.container-main #join p {
+.container-index #join p {
   -ms-grid-row: 3;
   grid-row: 3;
   -ms-grid-column: 1;
-  -ms-grid-column-span: 2;
-  grid-column: 1 / 3;
+  -ms-grid-column-span: 3;
+  grid-column: 1 / 4;
   -ms-grid-column-align: center;
       justify-self: center;
   margin: 0;
   color: red;
 }
 
-.container-main #create {
+.container-index #create {
   -ms-grid-row: 4;
   -ms-grid-column: 1;
   grid-area: footer;
@@ -161,5 +160,214 @@ app {
   -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   justify-self: center;
+}
+
+.loader {
+  color: #ffffff;
+  font-size: 90px;
+  text-indent: -9999em;
+  overflow: hidden;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  margin: 72px auto;
+  position: relative;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+  animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+}
+
+.container-lobby {
+  height: 100%;
+  width: 100%;
+  color: #d8dbe2;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-rows: 15% 15% 20% 50%;
+      grid-template-rows: 15% 15% 20% 50%;
+      grid-template-areas: "head" "pin" "settings" "players";
+}
+
+.container-lobby #master-missing {
+  -ms-grid-row: 3;
+  -ms-grid-column: 1;
+  grid-area: settings;
+  -ms-grid-column-align: center;
+      justify-self: center;
+  background: #a9bcd0;
+  text-align: center;
+  color: #324454;
+  padding: 20px;
+  margin: 1em auto;
+  width: 155px;
+  border-radius: 15px;
+  -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.container-lobby #header {
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  grid-area: head;
+  text-align: center;
+  margin: 30px 1em 0 1em;
+  -ms-grid-column-align: center;
+      justify-self: center;
+}
+
+.container-lobby #pin {
+  -ms-grid-row: 2;
+  -ms-grid-column: 1;
+  grid-area: pin;
+  text-align: center;
+  margin: 0 1em;
+  -ms-grid-column-align: center;
+      justify-self: center;
+}
+
+.container-lobby #settings-master {
+  -ms-grid-row: 3;
+  -ms-grid-column: 1;
+  grid-area: settings;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 100%;
+      grid-template-columns: 100%;
+  -ms-grid-rows: 60% 40%;
+      grid-template-rows: 60% 40%;
+  -ms-grid-column-align: center;
+      justify-self: center;
+  background: #a9bcd0;
+  text-align: center;
+  color: #324454;
+  padding: 21px;
+  margin: 0 1em;
+  border-radius: 15px;
+  -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  justify-self: center;
+}
+
+.container-lobby #settings-master .card-count-field {
+  -ms-grid-column: 1;
+  grid-column: 1;
+  -ms-grid-row: 1;
+  grid-row: 1;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
+  -ms-grid-rows: 50% auto;
+      grid-template-rows: 50% auto;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: start;
+}
+
+.container-lobby #settings-master .card-count-field h5 {
+  -ms-grid-row: 1;
+  grid-row: 1;
+  -ms-grid-column: 1;
+  -ms-grid-column-span: 3;
+  grid-column: 1 / 4;
+  margin: 0;
+  text-align: center;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}
+
+.container-lobby #settings-master .card-count-field h4 {
+  -ms-grid-row: 2;
+  grid-row: 2;
+  line-height: 1.6;
+}
+
+.container-lobby #settings-master .card-count-field button {
+  -ms-grid-row: 2;
+  grid-row: 2;
+  font-size: 25px;
+  -ms-grid-column-align: center;
+      justify-self: center;
+}
+
+.container-lobby #settings-master .card-count-field button #down {
+  -ms-grid-column: 1;
+  grid-column: 1;
+}
+
+.container-lobby #settings-master .card-count-field button #up {
+  -ms-grid-column: 3;
+  grid-column: 3;
+}
+
+.container-lobby #settings-master h5 {
+  -ms-grid-column: 1;
+  grid-column: 1;
+  -ms-grid-row: 2;
+  grid-row: 2;
+  margin: 15px 0 0 0;
+  -ms-grid-column-align: center;
+      justify-self: center;
+}
+
+.container-lobby #settings-player {
+  -ms-grid-row: 3;
+  -ms-grid-column: 1;
+  grid-area: settings;
+  -ms-grid-column-align: start;
+      justify-self: start;
+  background: #a9bcd0;
+  text-align: center;
+  color: #324454;
+  padding: 20px;
+  margin: 1em auto;
+  border-radius: 15px;
+  -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.container-lobby #settings-player h4 {
+  -ms-grid-column-align: center;
+      justify-self: center;
+  margin: 0;
+}
+
+.container-lobby #player-list {
+  -ms-grid-row: 4;
+  -ms-grid-column: 1;
+  grid-area: players;
+  -ms-flex-item-align: stretch;
+      -ms-grid-row-align: stretch;
+      align-self: stretch;
+  margin-left: 1em;
+}
+
+.container-lobby #player-list h4 {
+  text-align: center;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.container-lobby #player-list li {
+  background: #a9bcd0;
+  color: #324454;
+  margin-top: 5px;
+  margin-right: 1em;
+  padding: 20px;
+  border-radius: 15px;
+  -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.container-lobby #player-list li h6 {
+  margin-bottom: 0;
 }
 /*# sourceMappingURL=main.css.map */

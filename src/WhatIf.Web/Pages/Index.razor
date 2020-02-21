@@ -10,59 +10,68 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedSessionStorage ProtectedSessionStore
 
-<div class="container-main">
+<div class="container-index">
     <div id="bg"></div>
     <div id="header">
         <h1>What if?!</h1>
         <h5>The game that allows you to ask the real questions!</h5>
     </div>
 
-    @if (_existingSession != null)
+    @if (_isLoading)
     {
-        <div id="rejoin">
-            <h5>You are already in a game!</h5>
-            <MatButton OnClick="@Rejoin">Rejoin</MatButton>
-        </div>
-    }
-
-    <div id="join">
-
-        @if (_sessionToJoin is null && !_isCreatingSession)
-        {
-            <h3>Join</h3>
-            <MatTextField @bind-Value="@_sessionNumber" Outlined="true" Dense="true" PlaceHolder="Game number" Icon="dialpad"></MatTextField>
-            <MatButton OnClick="@Join" Icon="arrow_forward"></MatButton>
-        }
-        else
-        {
-            <h3>Enter nickname</h3>
-            <MatTextField @bind-Value="@_name" Outlined="true" OnInput="@(x => OnInput(x))" Dense="true" PlaceHolder="Nickname" Icon="person_outline"></MatTextField>
-            @if (_nameIsValid)
-            {
-                <MatButton OnClick="@CreatePlayer" Icon="arrow_forward"></MatButton>
-            }
-            else
-            {
-                <MatButton Disabled="true" Icon="arrow_forward"></MatButton>
-            }
-        }
-
-        @if (_sessionNotFound)
-        {
-            <p>Session not found</p>
-        }
-    </div>
-    @if (!_isCreatingSession)
-    {
-        <div id="create">
-            <MatButton OnClick="@CreateNew">Create new</MatButton>
+        <div id="loading">
+            <div class="loader"></div>
         </div>
     }
     else
     {
-        <div id="create">
-            <MatButton OnClick="@UndoCreateSession" Icon="arrow_back"></MatButton>
+        <div id="join">
+            @if (_sessionToJoin is null && !_isCreatingSession)
+            {
+                <h3>Join</h3>
+                <MatTextField TValue="string" OnInput="@(x => OnSessionNumberInput(x))" Outlined="true" Dense="true" OnKeyDown="@(async x => await OnSessionNumberKeyDown(x))" PlaceHolder="Game number" Icon="dialpad"></MatTextField>
+                <MatButton OnClick="@Join" Icon="arrow_forward"></MatButton>
+            }
+            else
+            {
+                <h3>Enter nickname</h3>
+                <MatTextField TValue="string" Outlined="true" OnInput="@(x => OnNicknameInput(x))" OnKeyDown="@(async x => await OnNameKeyDown(x))" Dense="true" PlaceHolder="Nickname" Icon="person_outline"></MatTextField>
+                @if (_nameIsValid)
+                {
+                    <MatButton OnClick="@CreatePlayer" Icon="arrow_forward"></MatButton>
+                }
+                else
+                {
+                    <MatButton Disabled="true" Icon="arrow_forward"></MatButton>
+                }
+            }
+
+            @if (_sessionNotFound)
+            {
+                <p>Session not found</p>
+            }
         </div>
+
+        @if (_existingSession != null)
+        {
+            <div id="rejoin">
+                <h5>You are already in a game!</h5>
+                <MatButton OnClick="@Rejoin">Rejoin</MatButton>
+            </div>
+        }
+
+        @if (_sessionToJoin is null && !_isCreatingSession)
+        {
+            <div id="create">
+                <MatButton OnClick="@CreateNew">Create new</MatButton>
+            </div>
+        }
+        else
+        {
+            <div id="create">
+                <MatButton OnClick="@UndoCreateSession" Icon="arrow_back"></MatButton>
+            </div>
+        }
     }
 </div>
 
@@ -79,23 +88,40 @@
     private SessionDto _sessionToJoin;
     private bool _nameIsValid;
     private bool _isCreatingSession;
+    private bool _isLoading;
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set { _isLoading = value; StateHasChanged(); }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
-        if (state is null)
+        if (!firstRender)
             return;
 
-        var session = await SessionService.Get(state.SessionId);
-        if (session is null)
-            return;
-
-        if (!session.IsFinished)
+        IsLoading = true;
+        try
         {
-            _existingSession = session;
-            StateHasChanged();
-        }
+            var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
+            if (state is null)
+                return;
 
+            var session = await SessionService.Get(state.SessionId);
+            if (session is null)
+                return;
+
+            if (!session.IsFinished)
+            {
+                _existingSession = session;
+                StateHasChanged();
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
 
@@ -112,48 +138,88 @@
             _sessionNotFound = true;
             return;
         }
-        _sessionToJoin = await SessionService.Get(num);
-        if (_sessionToJoin is null)
+        IsLoading = true;
+        try
         {
-            _sessionNotFound = true;
-            return;
+            _sessionToJoin = await SessionService.Get(num);
+            if (_sessionToJoin is null)
+            {
+                _sessionNotFound = true;
+                return;
+            }
         }
+        finally
+        {
+
+            IsLoading = false;
+        }
+
     }
 
     private async Task CreatePlayer()
     {
-        if (_isCreatingSession)
-            _sessionToJoin = await SessionService.Create();
+        IsLoading = true;
 
-        var player = await PlayerService.Create(_name, _sessionToJoin.Id, _isCreatingSession);
+        try
+        {
+            if (_isCreatingSession)
+                _sessionToJoin = await SessionService.Create();
 
-        var playerSessionState = new SessionPlayerState { SessionId = _sessionToJoin.Id, PlayerId = player.Id, IsGameMaster = _isCreatingSession };
-        await ProtectedSessionStore.SetAsync("state", playerSessionState);
+            var player = await PlayerService.Create(_name, _sessionToJoin.Id, _isCreatingSession);
+
+            var playerSessionState = new SessionPlayerState { SessionId = _sessionToJoin.Id, PlayerId = player.Id, IsGameMaster = _isCreatingSession };
+            await ProtectedSessionStore.SetAsync("state", playerSessionState);
 
 
-        NavigationManager.NavigateTo("sessionlobby");
+            NavigationManager.NavigateTo("sessionlobby");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+
     }
 
     private void CreateNew()
     {
         _isCreatingSession = true;
+        _sessionNotFound = false;
         StateHasChanged();
     }
 
-    
+
     private void UndoCreateSession()
     {
         _isCreatingSession = false;
+        _sessionToJoin = null;
         StateHasChanged();
     }
 
-    private void OnInput(ChangeEventArgs o)
+    private void OnNicknameInput(ChangeEventArgs o)
     {
-        var isValid = o.Value is string name && !string.IsNullOrWhiteSpace(name);
+        _name = o.Value as string;
+        var isValid = !string.IsNullOrWhiteSpace(_name);
         if (isValid == _nameIsValid)
             return;
-
         _nameIsValid = isValid;
         StateHasChanged();
     }
+
+    private async Task OnNameKeyDown(KeyboardEventArgs o)
+    {
+        if (o.Key == "Enter" && _nameIsValid)
+            await CreatePlayer();
+    }
+
+    private async Task OnSessionNumberKeyDown(KeyboardEventArgs o)
+    {
+        if (o.Key == "Enter")
+            await Join();
+    }
+
+    private void OnSessionNumberInput(ChangeEventArgs o)
+    {
+        _sessionNumber = o.Value as string;
+    }
+
 }
