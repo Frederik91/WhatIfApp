@@ -26,34 +26,44 @@
     }
 
     <div id="join">
-        <h3>Join game</h3>
-        @if (_sessionByPin is null)
+
+        @if (_sessionToJoin is null && !_isCreatingSession)
         {
-            <MatTextField @bind-Value="@_sessionNumber" Outlined="true" Dense="true" PlaceHolder="Game number"></MatTextField>
-            <MatButton OnClick="@Join">Enter</MatButton>
+            <h3>Join</h3>
+            <MatTextField @bind-Value="@_sessionNumber" Outlined="true" Dense="true" PlaceHolder="Game number" Icon="dialpad"></MatTextField>
+            <MatButton OnClick="@Join" Icon="arrow_forward"></MatButton>
         }
         else
         {
-            <MatTextField @bind-Value="@_name" Label="Nickname"></MatTextField>
-            @if (!string.IsNullOrEmpty(_name))
+            <h3>Enter nickname</h3>
+            <MatTextField @bind-Value="@_name" Outlined="true" OnInput="@(x => OnInput(x))" Dense="true" PlaceHolder="Nickname" Icon="person_outline"></MatTextField>
+            @if (_nameIsValid)
             {
-                <MatButton OnClick="@CreatePlayer">Continue</MatButton>
+                <MatButton OnClick="@CreatePlayer" Icon="arrow_forward"></MatButton>
             }
             else
             {
-                <MatButton Disabled="true">Continue</MatButton>
+                <MatButton Disabled="true" Icon="arrow_forward"></MatButton>
             }
         }
-
 
         @if (_sessionNotFound)
         {
             <p>Session not found</p>
         }
     </div>
-    <div id="create">
-        <MatButton OnClick="@NavigateToCreate">Create new</MatButton>
-    </div>
+    @if (!_isCreatingSession)
+    {
+        <div id="create">
+            <MatButton OnClick="@CreateNew">Create new</MatButton>
+        </div>
+    }
+    else
+    {
+        <div id="create">
+            <MatButton OnClick="@UndoCreateSession" Icon="arrow_back"></MatButton>
+        </div>
+    }
 </div>
 
 
@@ -61,11 +71,14 @@
 
 
 @code {
+
     private string _sessionNumber;
     private string _name = string.Empty;
     private bool _sessionNotFound;
     private SessionDto _existingSession;
-    private SessionDto _sessionByPin;
+    private SessionDto _sessionToJoin;
+    private bool _nameIsValid;
+    private bool _isCreatingSession;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -74,6 +87,9 @@
             return;
 
         var session = await SessionService.Get(state.SessionId);
+        if (session is null)
+            return;
+
         if (!session.IsFinished)
         {
             _existingSession = session;
@@ -96,8 +112,8 @@
             _sessionNotFound = true;
             return;
         }
-        _sessionByPin = await SessionService.Get(num);
-        if (_sessionByPin is null)
+        _sessionToJoin = await SessionService.Get(num);
+        if (_sessionToJoin is null)
         {
             _sessionNotFound = true;
             return;
@@ -106,17 +122,38 @@
 
     private async Task CreatePlayer()
     {
-        var player = await PlayerService.Create(_name, _sessionByPin.Id, false);
+        if (_isCreatingSession)
+            _sessionToJoin = await SessionService.Create();
 
-        var playerSessionState = new SessionPlayerState { SessionId = _sessionByPin.Id, PlayerId = player.Id, IsGameMaster = false };
+        var player = await PlayerService.Create(_name, _sessionToJoin.Id, _isCreatingSession);
+
+        var playerSessionState = new SessionPlayerState { SessionId = _sessionToJoin.Id, PlayerId = player.Id, IsGameMaster = _isCreatingSession };
         await ProtectedSessionStore.SetAsync("state", playerSessionState);
 
 
         NavigationManager.NavigateTo("sessionlobby");
     }
 
-    private void NavigateToCreate()
+    private void CreateNew()
     {
-        NavigationManager.NavigateTo("createsession");
+        _isCreatingSession = true;
+        StateHasChanged();
+    }
+
+    
+    private void UndoCreateSession()
+    {
+        _isCreatingSession = false;
+        StateHasChanged();
+    }
+
+    private void OnInput(ChangeEventArgs o)
+    {
+        var isValid = o.Value is string name && !string.IsNullOrWhiteSpace(name);
+        if (isValid == _nameIsValid)
+            return;
+
+        _nameIsValid = isValid;
+        StateHasChanged();
     }
 }
