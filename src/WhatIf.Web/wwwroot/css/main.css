@@ -167,6 +167,8 @@ body {
   font-size: 90px;
   text-indent: -9999em;
   overflow: hidden;
+  -ms-grid-column-align: center;
+      justify-self: center;
   width: 1em;
   height: 1em;
   border-radius: 50%;
@@ -185,14 +187,22 @@ body {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  -webkit-box-pack: stretch;
+      -ms-flex-pack: stretch;
+          justify-content: stretch;
   display: -ms-grid;
   display: grid;
   -ms-grid-rows: 15% 15% 20% 50%;
       grid-template-rows: 15% 15% 20% 50%;
       grid-template-areas: "head" "pin" "settings" "players";
+}
+
+.container-lobby .loader {
+  -ms-grid-row: head;
+      grid-row-start: head;
+  grid-row-end: players;
+  -ms-grid-column-align: center;
+      justify-self: center;
 }
 
 .container-lobby #master-missing {
@@ -240,19 +250,19 @@ body {
   display: grid;
   -ms-grid-columns: 100%;
       grid-template-columns: 100%;
-  -ms-grid-rows: 60% 40%;
-      grid-template-rows: 60% 40%;
+  -ms-grid-rows: 70% auto;
+      grid-template-rows: 70% auto;
   -ms-grid-column-align: center;
       justify-self: center;
   background: #a9bcd0;
   text-align: center;
-  color: #324454;
-  padding: 21px;
-  margin: 0 1em;
+  width: 200px;
+  color: black;
+  padding: 15px;
+  margin: 0 0;
   border-radius: 15px;
   -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  justify-self: center;
 }
 
 .container-lobby #settings-master .card-count-field {
@@ -264,11 +274,8 @@ body {
   display: grid;
   -ms-grid-columns: 1fr 1fr 1fr;
       grid-template-columns: 1fr 1fr 1fr;
-  -ms-grid-rows: 50% auto;
-      grid-template-rows: 50% auto;
-  -webkit-box-align: start;
-      -ms-flex-align: start;
-          align-items: start;
+  -ms-grid-rows: 50% 50%;
+      grid-template-rows: 50% 50%;
 }
 
 .container-lobby #settings-master .card-count-field h5 {
@@ -287,7 +294,8 @@ body {
 .container-lobby #settings-master .card-count-field h4 {
   -ms-grid-row: 2;
   grid-row: 2;
-  line-height: 1.6;
+  margin: 5px 0 0 0;
+  place-self: center;
 }
 
 .container-lobby #settings-master .card-count-field button {
@@ -313,9 +321,19 @@ body {
   grid-column: 1;
   -ms-grid-row: 2;
   grid-row: 2;
-  margin: 15px 0 0 0;
+  margin: 5px 0 0 0;
   -ms-grid-column-align: center;
       justify-self: center;
+}
+
+.container-lobby #settings-master p {
+  margin-bottom: 0;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.container-lobby #settings-master button {
+  justify-items: center;
 }
 
 .container-lobby #settings-player {
@@ -326,8 +344,9 @@ body {
       justify-self: start;
   background: #a9bcd0;
   text-align: center;
-  color: #324454;
+  color: black;
   padding: 20px;
+  width: 200px;
   margin: 1em auto;
   border-radius: 15px;
   -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -347,7 +366,16 @@ body {
   -ms-flex-item-align: stretch;
       -ms-grid-row-align: stretch;
       align-self: stretch;
+}
+
+.container-lobby #player-list hr {
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
   margin-left: 1em;
+  margin-right: 1em;
+  border-color: #273441;
+  border-width: 2px;
 }
 
 .container-lobby #player-list h4 {
@@ -356,9 +384,13 @@ body {
   margin-top: 20px;
 }
 
+.container-lobby #player-list ul {
+  margin-left: 1em;
+}
+
 .container-lobby #player-list li {
   background: #a9bcd0;
-  color: #324454;
+  color: black;
   margin-top: 5px;
   margin-right: 1em;
   padding: 20px;
@@ -369,5 +401,6 @@ body {
 
 .container-lobby #player-list li h6 {
   margin-bottom: 0;
+  margin-left: 8px;
 }
 /*# sourceMappingURL=main.css.map */

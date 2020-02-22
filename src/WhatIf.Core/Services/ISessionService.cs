@@ -14,5 +14,6 @@ namespace WhatIf.Core.Services
         Task MarkCreateAnswersRoundFinished(Guid sessionId);
         Task MarkReadingRoundStarted(Guid sessionId);
         Task MarkSessionFinished (Guid sessionId);
+        Task SetCardAmount(Guid sessionId, int cardAmount);
     }
 }

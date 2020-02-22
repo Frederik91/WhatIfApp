@@ -52,6 +52,11 @@ namespace WhatIf.Database.Services.Sessions
             return _commandExecutor.ExecuteAsync(new MarkSessionFinishedCommand { SessionId = sessionId });
         }
 
+        public Task SetCardAmount(Guid sessionId, int cardAmount)
+        {
+            return _commandExecutor.ExecuteAsync(new SetCardAmountCommand {SessionId = sessionId, CardAmount = cardAmount});
+;        }
+
         public async Task<SessionDto> Get(int number)
         {
             var sessionTbl = await _queryExecutor.ExecuteAsync(new SessionByNumberQuery { Number = number });

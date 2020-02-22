@@ -16,23 +16,14 @@
 @implements IAsyncDisposable
 
 <div class="container-lobby">
-    @if (_player is null || _session is null)
+    @if (IsLoading)
     {
         <div class="loader">
-            <h3 class="mat-subtitle1">Joining session</h3>
-            <MatProgressBar Progress="@Progress"></MatProgressBar>
         </div>
     }
     else
     {
-        @if (IsStarting)
-        {
-            <div class="loader">
-                <h3 class="mat-subtitle1">Game is starting</h3>
-                <MatProgressBar Indeterminate="true"></MatProgressBar>
-            </div>
-        }
-        else if (!(_players.FirstOrDefault(x => x.IsGameMaster) is { } gameMaster))
+        if (!(_players.FirstOrDefault(x => x.IsGameMaster) is { } gameMaster))
         {
             <div id="master-missing"></div>
             <h3>Game master has left the building.</h3>
@@ -60,14 +51,14 @@
                     }
                     else
                     {
-                        <h5>Not enough players to start</h5>
+                        <p>Not enough players to start</p>
                     }
 
                     <div class="card-count-field">
                         <h5>Number of cards</h5>
-                       <MatButton id="down" OnClick="@(x => CardAmount--)">-</MatButton>
-                       <h4>@CardAmount</h4>
-                       <MatButton id="up" OnClick="@(x => CardAmount++)">+</MatButton>
+                        <MatButton id="down" OnClick="@(x => CardAmount--)">-</MatButton>
+                        <h4>@CardAmount</h4>
+                        <MatButton id="up" OnClick="@(x => CardAmount++)">+</MatButton>
                     </div>
                 </div>
             }
@@ -80,17 +71,19 @@
             }
 
             <div id="player-list">
-                <h4>Players in lobby</h4>
+                <hr />
                 <MatList>
                     @foreach (var player in _players)
                     {
                         <MatListItem>
                             @if (player.IsGameMaster)
                             {
-                                <MatH6 style="font-weight: bold">@player.Name (Game master)</MatH6>
+                                <MatIcon Icon="star"></MatIcon>
+                                <MatH6>@player.Name</MatH6>
                             }
                             else
                             {
+                                <MatIcon Icon="person"></MatIcon>
                                 <MatH6>@player.Name</MatH6>
                             }
 
@@ -110,8 +103,7 @@
     private SessionDto _session;
     private PlayerDto _player;
     private HubConnection _connection;
-    private bool _isLoading;
-    private double _progress;
+    private bool _isLoading = true;
     private bool _isStarting;
     private int _cardAmount;
     private bool _disableCardAmountNotification;
@@ -120,12 +112,6 @@
     {
         get => _isLoading;
         set { _isLoading = value; StateHasChanged(); }
-    }
-
-    public double Progress
-    {
-        get => _progress;
-        set { _progress = value; StateHasChanged(); }
     }
 
     public bool IsStarting
@@ -156,21 +142,17 @@
             return;
 
         IsLoading = true;
-        Progress = 0;
         try
         {
             NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
             var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
             if (state is null)
             {
-                NavigationManager.NavigateTo("(/");
+                NavigationManager.NavigateTo("/");
                 return;
             }
 
-
-            Progress = 0.2;
             _player = await PlayerService.Get(state.PlayerId);
-            Progress = 0.4;
             _session = await SessionService.Get(state.SessionId);
             if (_player is null || _session is null || _session.IsFinished)
             {
@@ -178,7 +160,6 @@
                 return;
             }
 
-            Progress = 0.6;
             SetCardAmountWithoutNotification(_session.CardAmount);
 
             if (_session.IsFinished)
@@ -193,7 +174,6 @@
             }
 
             var playersInSession = await PlayerService.GetPlayersInSession(_session.Id);
-            Progress = 0.8;
 
             _players.AddRange(playersInSession);
             await ConnectToSignalRHub(_session.Id, _player.Id);
@@ -209,6 +189,7 @@
     {
         if (_connection != null)
             await _connection.SendAsync("NotifyCardAmountChanged", _session.Id, CardAmount);
+        await SessionService.SetCardAmount(_session.Id, CardAmount);
     }
 
     private async void NavigationManagerOnLocationChanged(object sender, LocationChangedEventArgs e)
