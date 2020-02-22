@@ -7,5 +7,12 @@ namespace WhatIf.Web.Components.Questions
         [Parameter]
         public CreateQuestionModel CreateQuestion { get; set; }
 
+
+        [Parameter] public EventCallback OnSubmit { get; set; }
+
+        protected void Submit()
+        {
+            OnSubmit.InvokeAsync(null);
+        }
     }
 }

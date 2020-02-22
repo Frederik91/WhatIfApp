@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
@@ -7,6 +8,8 @@ namespace WhatIf.Web.Components.Questions
     public class QuestionsCreatorComponentBase : ComponentBase
     {
         [Parameter] public int QuestionCount { get; set; }
+
+        protected CreateQuestionModel CurrentQuestion { get; set; }
 
          public List<CreateQuestionModel> Questions { get; set; }
 
@@ -19,11 +22,16 @@ namespace WhatIf.Web.Components.Questions
             {
                 Questions.Add(new CreateQuestionModel { Title = "Question " + i, Content = "What happens if " });
             }
+
+            CurrentQuestion = Questions.First();
         }
 
-        public Task Submit()
+        protected async Task NextQuestion()
         {
-            return OnSubmit.InvokeAsync(Questions);
+            CurrentQuestion.IsSubmitted = true;
+            CurrentQuestion = Questions.FirstOrDefault(x => !x.IsSubmitted);
+            if (CurrentQuestion is null)
+                await OnSubmit.InvokeAsync(Questions);
         }
     }
 }

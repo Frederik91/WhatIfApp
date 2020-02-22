@@ -63,7 +63,7 @@ namespace WhatIf.Web
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 using var context = scope.ServiceProvider.GetService<WhatIfDbContext>();
-                context.Database.EnsureDeleted();
+                //context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
             }
 
@@ -78,7 +78,7 @@ namespace WhatIf.Web
                 app.UseHsts();
             }
 
-
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseFileServer();
@@ -89,7 +89,7 @@ namespace WhatIf.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
-                endpoints.MapHub<GameHub>("/game");
+                endpoints.MapHub<GameHub>("/gamehub");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }

@@ -21,29 +21,29 @@
 
 @implements IAsyncDisposable
 
-@if (IsCreatingQuestions)
-{
-<QuestionsCreator QuestionCount="@_session.CardAmount" OnSubmit="@(async x => await SubmitQuestions(x))"></QuestionsCreator>
-}
-else if (IsWaitingForOtherPlayers)
-{
-<h3 class="mat-subtitle1">Waiting for remaining players</h3>
-}
-else if (IsAnsweringQuestions)
-{
-<AnswersCreator PlayerId="@_player.Id" OnSubmit="@(async x => await SubmitAnswers(x))"></AnswersCreator>
-}
+<div class="container-game">
+    @if (IsCreatingQuestions)
+    {
+        <QuestionsCreator QuestionCount="@_session.CardAmount" OnSubmit="@(async x => await SubmitQuestions(x))"></QuestionsCreator>
+    }
+    else if (IsWaitingForOtherPlayers)
+    {
+        <h1>Waiting for remaining players</h1>
+    }
+    else if (IsAnsweringQuestions)
+    {
+        <AnswersCreator PlayerId="@_player.Id" OnSubmit="@(async x => await SubmitAnswers(x))"></AnswersCreator>
+    }
 
-else if (ShowReadingRound)
-{
-<QuestionAnswersReader PlayerId="@_player.Id" Connection="@_connection"></QuestionAnswersReader>
-}
-else
-{
-<h3 class="mat-subtitle1">Loading game</h3>
-<MatProgressBar Indeterminate="true"></MatProgressBar>
-}
-
+    else if (ShowReadingRound)
+    {
+        <QuestionAnswersReader PlayerId="@_player.Id" Connection="@_connection"></QuestionAnswersReader>
+    }
+    else
+    {
+        <div class="loader"></div>
+    }
+</div>
 
 
 @code{
@@ -88,12 +88,14 @@ else
         set { _showReadingRound = value; StateHasChanged(); }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender)
+            return;
+        
         IsLoading = true;
         try
         {
-            NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
             var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
             if (state is null)
             {
@@ -126,6 +128,13 @@ else
                 IsWaitingForOtherPlayers = true;
             else if (_session.ReadingRoundHasStarted)
                 ShowReadingRound = true;
+
+            while (true)
+            {
+                NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
+                break;
+            }
+
         }
         finally
         {

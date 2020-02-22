@@ -20,7 +20,7 @@ namespace WhatIf.Web.Helpers
 
         public HubConnection Build()
         {
-            var uri = new Uri(_navigationManager.BaseUri + "game");
+            var uri = new Uri(_navigationManager.BaseUri + "gamehub");
             var connection = new HubConnectionBuilder()
                 .WithUrl(uri)
                 .Build();

@@ -144,7 +144,6 @@
         IsLoading = true;
         try
         {
-            NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
             var state = await ProtectedSessionStore.GetAsync<SessionPlayerState>("state");
             if (state is null)
             {
@@ -177,6 +176,7 @@
 
             _players.AddRange(playersInSession);
             await ConnectToSignalRHub(_session.Id, _player.Id);
+            NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
         }
         finally
         {

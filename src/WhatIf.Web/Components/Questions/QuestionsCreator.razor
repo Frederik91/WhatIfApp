@@ -13,9 +13,8 @@
         margin: 0px;
     }
 </style>
-@foreach (var question in Questions)
-{
-    <h3 style="margin-bottom: 5px">@question.Title</h3>
-    <QuestionCreator CreateQuestion="@question"></QuestionCreator>
-}
-<MatButton OnClick="@(async x => await Submit())">Submit</MatButton>
+
+<div class="container-questions">
+    <h3>Question @(Questions.IndexOf(CurrentQuestion) + 1) of @QuestionCount</h3>
+    <QuestionCreator CreateQuestion="@CurrentQuestion" OnSubmit="@(x => NextQuestion())"></QuestionCreator>
+</div>
