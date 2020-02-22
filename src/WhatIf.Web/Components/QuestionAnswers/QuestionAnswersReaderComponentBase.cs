@@ -104,13 +104,15 @@ namespace WhatIf.Web.Components.QuestionAnswers
             }
 
             var session = await SessionService.Get(_player.SessionId);
-            ShowStartupScreen = !session.ReadingRoundHasStarted;
+            ShowStartupScreen = QuestionAnswers.TrueForAll(x => !x.Question.IsRead && !x.Question.IsCurrent && !x.Answer.IsCurrent && !x.Answer.IsRead);
+            if (ShowStartupScreen)
+                return;
+
             if (session.IsFinished)
                 SetRoundFinished();
 
-            if (!session.ReadingRoundHasStarted)
-                return;
-            
+
+
             if (QuestionAnswers.FirstOrDefault(x => x.Question.IsCurrent) is { } currentQuestion)
                 ShowQuestion(currentQuestion);
             else if (QuestionAnswers.FirstOrDefault(x => x.Answer.IsCurrent) is { } currentAnswer)
@@ -128,19 +130,28 @@ namespace WhatIf.Web.Components.QuestionAnswers
                 await SessionService.MarkSessionFinished(_player.SessionId);
         }
 
-        private void OnReadAnswer(Guid answerId)
+        private async Task OnReadAnswer(Guid answerId)
         {
+            if (Current?.Question.AssignedAnswerId == answerId)
+                return;
+
+            if (Current?.Question.IsCurrent == true)
+            {
+                Current.Question.IsCurrent = false;
+                Current.Question.IsRead = true;
+                await QuestionService.MarkQuestionAsCurrent(Current.Question.Id, false);
+                await QuestionService.MarkQuestionAsRead(Current.Question.Id);
+                Current = null;
+            }
+
             var qa = QuestionAnswers.FirstOrDefault(x => x.Answer.Id == answerId);
             if (qa is null)
                 return;
 
             if (RoundIsFinished())
-            {
                 SetRoundFinished();
-                return;
-            }
-
-            ShowAnswer(qa);
+            else
+                ShowAnswer(qa);
         }
 
         private bool RoundIsFinished()
@@ -174,22 +185,21 @@ namespace WhatIf.Web.Components.QuestionAnswers
         {
             ShowStartupScreen = false;
             var qa = QuestionAnswers.First();
-            await SessionService.MarkReadingRoundStarted(_player.SessionId);
             await ReadQuestion(qa);
         }
 
         private async Task ReadQuestion(QuestionAnswerModel questionAnswerModel)
         {
-            await QuestionService.MarkQuestionAsCurrent(Current.Question.Id);
-            await AnswerService.MarkAnswerAsCurrent(Current.Question.AssignedAnswerId);
-            await Connection.SendAsync("RequestNextAnswer", _player.SessionId, Current.Question.AssignedAnswerId);
+            await QuestionService.MarkQuestionAsCurrent(questionAnswerModel.Question.Id, true);
+            await AnswerService.MarkAnswerAsCurrent(questionAnswerModel.Question.AssignedAnswerId, true);
+            await Connection.SendAsync("RequestNextAnswer", _player.SessionId, questionAnswerModel.Question.AssignedAnswerId);
             ShowQuestion(questionAnswerModel);
         }
 
         private void ShowQuestion(QuestionAnswerModel questionAnswerModel)
         {
-            Current.Question.IsCurrent = true;
             Current = questionAnswerModel;
+            Current.Question.IsCurrent = true;
             IsReadingQuestion = true;
             IsReadingAnswer = false;
         }
@@ -199,9 +209,12 @@ namespace WhatIf.Web.Components.QuestionAnswers
             IsReadingAnswer = false;
             IsReadingQuestion = true;
 
-            Current.Question.IsRead = true;
-            await QuestionService.MarkQuestionAsRead(Current.Question.Id);
+            Current.Answer.IsRead = true;
+            Current.Answer.IsCurrent = false;
             await AnswerService.MarkAnswerAsRead(Current.Answer.Id);
+            await AnswerService.MarkAnswerAsCurrent(Current.Answer.Id, false);
+            await AnswerService.MarkAnswerAsCurrent(Current.Question.AssignedAnswerId, true);
+            await QuestionService.MarkQuestionAsCurrent(Current.Question.Id, true);
             var remainingAnswers = await AnswerService.GetRemainingAnswerCount(_player.SessionId);
             if (remainingAnswers > 0)
                 await Connection.SendAsync("RequestNextAnswer", _player.SessionId, Current.Question.AssignedAnswerId);

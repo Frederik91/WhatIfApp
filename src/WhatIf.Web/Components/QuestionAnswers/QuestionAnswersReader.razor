@@ -1,20 +1,5 @@
 ﻿@inherits QuestionAnswersReaderComponentBase
 
-
-<style>
-    .demo-mat-card {
-        max-width: 400px;
-    }
-
-    .demo-mat-card-content {
-        padding: 1rem;
-    }
-
-    .demo-mat-card-clean-margin {
-        margin: 0px;
-    }
-</style>
-
 @if (GameHasEnded)
 {
     <h1>The round is over</h1>
@@ -24,7 +9,7 @@ else if (ShowStartupScreen)
     @if (Player.IsGameMaster)
     {
         <h1>You are ready to read questions and answers, click start to begin.</h1>
-        <MatButton OnClick="@(async x => await Start())">Start</MatButton>
+        <MatButton id="start-button" OnClick="@(async x => await Start())">Start</MatButton>
     }
     else
     {

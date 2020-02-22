@@ -20,7 +20,7 @@ namespace WhatIf.Database.Services.Questions
         public Task HandleAsync(MarkQuestionAsCurrentCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
             var question = _dbContext.Questions.First(x => x.Id == command.QuestionId);
-            question.IsCurrent = true;
+            question.IsCurrent = command.IsCurrent;
             _dbContext.Entry(question).Property(x => x.IsRead).IsModified = true;
             return _dbContext.SaveChangesAsync(cancellationToken);
         }

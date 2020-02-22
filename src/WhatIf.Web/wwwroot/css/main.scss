@@ -1,6 +1,6 @@
 ﻿$colors: (
   accent: #d8dbe2,
-  backgrnd:#324454,
+  backgrnd: #324454,
   backgrnd-dark: darken(#324454, 30%),
   backgrnd-card: #a9bcd0
 );
@@ -336,142 +336,229 @@ body {
   height: 100%;
   padding: 15px;
   display: grid;
-  grid-template-rows: 100%;
+  grid-template-rows: 80% 20%;
   grid-template-columns: 100%;
-  align-items: center;
 
   h1 {
     place-self: center;
     justify-self: center;
     text-align: center;
+    grid-column: 1;
+    grid-row: 1 / 3;
     color: color(accent);
   }
 
-  .container-questions {
+  .mdc-button {
+    grid-row: 2;
+    height: 60px;
+    padding: 20px;
+    max-width: 300px;
+    margin: 0 0;
+    grid-column: 1;
+    background: color(backgrnd-card);
+    align-self: center;
+    justify-self: center;
+    color: color(backgrnd-dark);
     width: 100%;
-    height: 100%;
+    border-radius: $borders;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  #read-question {
+    grid-row: 1;
     display: grid;
-    grid-template-rows: 20% 60% 20%;
+    grid-template-rows: 20% 80%;
     grid-template-columns: 100%;
-    grid-template-areas: "header" "card" "next";
     align-items: center;
     justify-items: center;
 
-    h3 {
-      grid-area: header;
+    #title {
+      grid-row: 1;
+      padding: 20px;
       text-align: center;
-      background: color(backgrnd-card);
-      color: color(backgrnd-dark);
-      padding: 15px;
-      width: 100%;
       max-width: 300px;
       margin: 0 0;
+      background: color(backgrnd-card);
+      color: color(backgrnd-dark);
+      width: 100%;
       border-radius: $borders;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
 
-    #question {
-      margin: 0 1em;
-      grid-area: card;
-      background: color(backgrnd-card);
-      max-width: 300px;
-      width: 100%;
-      color: color(backgrnd-dark);
-      padding: 15px;
-      margin: 0 0;
-      border-radius: $borders;
-
-      textarea {
-        overflow: auto;
-        margin-top: 20px;
-        padding: 5px;
-        min-height: 120px;
-      }
-    }
-    .mdc-button {
-      grid-area: next;
-      background: color(backgrnd-card);
+    #content {
+      grid-row: 2;
       height: 60px;
-      color: color(backgrnd-dark);
       padding: 20px;
       max-width: 300px;
       margin: 0 0;
+      background: color(backgrnd-card);
+      color: color(backgrnd-dark);
       width: 100%;
       border-radius: $borders;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
   }
 
-  .container-answers {
-    width: 100%;
-    height: 100%;
+  #read-answer {
+    grid-row: 1;
     display: grid;
-    grid-template-rows: 10% 30% 40% 20%;
+    grid-template-rows: 20% 80%;
     grid-template-columns: 100%;
-    grid-template-areas: "header" "question" "answer" "next";
     align-items: center;
     justify-items: center;
 
-    h3 {
-      grid-area: header;
+    #title {
+      grid-row: 1;
+      padding: 20px;
       text-align: center;
-      background: color(backgrnd-card);
-      color: color(backgrnd-dark);
-      padding: 15px;
-      width: 100%;
       max-width: 300px;
       margin: 0 0;
+      background: color(backgrnd-card);
+      color: color(backgrnd-dark);
+      width: 100%;
       border-radius: $borders;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
 
-    #question {
-      margin: 0 1em;
-      grid-area: question;
-      background: color(backgrnd-card);
-      max-width: 300px;
-      text-align: center;
-      width: 100%;      
-      color: color(backgrnd-dark);
-      padding: 15px;
-      margin: 0 0;
-      border-radius: $borders;
-      
-      p {
-        margin: 0;
-      }
-    }
-
-    #answer {
-      margin: 0 1em;
-      grid-area: answer;
-      background: color(backgrnd-card);
-      max-width: 300px;
-      width: 100%;
-      color: color(backgrnd-dark);
-      padding: 15px;
-      margin: 0 0;
-      border-radius: $borders;
-
-      textarea {
-        overflow: auto;
-        margin-top: 20px;
-        padding: 5px;
-        min-height: 120px;
-      }
-    }
-
-    .mdc-button {
-      grid-area: next;
-      background: color(backgrnd-card);
+    #content {
+      grid-row: 2;
       height: 60px;
-      color: color(backgrnd-dark);
       padding: 20px;
       max-width: 300px;
       margin: 0 0;
+      background: color(backgrnd-card);
+      color: color(backgrnd-dark);
       width: 100%;
       border-radius: $borders;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
+  }
+}
+
+.container-questions {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 20% 60% 20%;
+  grid-template-columns: 100%;
+  grid-template-areas: "header" "card" "next";
+  align-items: center;
+  justify-items: center;
+
+  h3 {
+    grid-area: header;
+    text-align: center;
+    background: color(backgrnd-card);
+    color: color(backgrnd-dark);
+    padding: 15px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 0;
+    border-radius: $borders;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  #question {
+    margin: 0 1em;
+    grid-area: card;
+    background: color(backgrnd-card);
+    max-width: 300px;
+    width: 100%;
+    color: color(backgrnd-dark);
+    padding: 15px;
+    margin: 0 0;
+    border-radius: $borders;
+
+    textarea {
+      overflow: auto;
+      margin-top: 20px;
+      padding: 5px;
+      min-height: 120px;
+    }
+  }
+  .mdc-button {
+    grid-area: next;
+    background: color(backgrnd-card);
+    height: 60px;
+    color: color(backgrnd-dark);
+    padding: 20px;
+    max-width: 300px;
+    margin: 0 0;
+    width: 100%;
+    border-radius: $borders;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.container-answers {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-rows: 10% 30% 40% 20%;
+  grid-template-columns: 100%;
+  grid-template-areas: "header" "question" "answer" "next";
+  align-items: center;
+  justify-items: center;
+
+  h3 {
+    grid-area: header;
+    text-align: center;
+    background: color(backgrnd-card);
+    color: color(backgrnd-dark);
+    padding: 15px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 0;
+    border-radius: $borders;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  #question {
+    margin: 0 1em;
+    grid-area: question;
+    background: color(backgrnd-card);
+    max-width: 300px;
+    text-align: center;
+    width: 100%;
+    color: color(backgrnd-dark);
+    padding: 15px;
+    margin: 0 0;
+    border-radius: $borders;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  #answer {
+    margin: 0 1em;
+    grid-area: answer;
+    background: color(backgrnd-card);
+    max-width: 300px;
+    width: 100%;
+    color: color(backgrnd-dark);
+    padding: 15px;
+    margin: 0 0;
+    border-radius: $borders;
+
+    textarea {
+      overflow: auto;
+      margin-top: 20px;
+      padding: 5px;
+      min-height: 120px;
+    }
+  }
+
+  .mdc-button {
+    grid-area: next;
+    background: color(backgrnd-card);
+    height: 60px;
+    color: color(backgrnd-dark);
+    padding: 20px;
+    max-width: 300px;
+    margin: 0 0;
+    width: 100%;
+    border-radius: $borders;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   }
 }

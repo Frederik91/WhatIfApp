@@ -48,9 +48,9 @@ namespace WhatIf.Database.Services.Answers
             return _queryExecutor.ExecuteAsync(new RemainingAnswersCountQuery { SessionId = sessionId });
         }
 
-        public Task MarkAnswerAsCurrent(Guid answerId)
+        public Task MarkAnswerAsCurrent(Guid answerId, bool isCurrent)
         {
-            return _commandExecutor.ExecuteAsync(new MarkAnswerAsCurrentCommand { AnswerId = answerId });
+            return _commandExecutor.ExecuteAsync(new MarkAnswerAsCurrentCommand { AnswerId = answerId, IsCurrent = isCurrent });
         }
     }
 }

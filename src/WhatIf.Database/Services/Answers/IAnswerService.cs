@@ -12,6 +12,6 @@ namespace WhatIf.Database.Services.Answers
         Task<List<QuestionAnswerDto>> GetQuestionAnswersForPlayer(Guid playerId);
         Task MarkAnswerAsRead(Guid answerId);
         Task<int> GetRemainingAnswerCount(Guid sessionId);
-        Task MarkAnswerAsCurrent(Guid answerId);
+        Task MarkAnswerAsCurrent(Guid answerId, bool isCurrent);
     }
 }

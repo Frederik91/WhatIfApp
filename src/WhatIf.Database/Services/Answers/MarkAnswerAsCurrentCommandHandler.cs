@@ -21,7 +21,7 @@ namespace WhatIf.Database.Services.Answers
         public Task HandleAsync(MarkAnswerAsCurrentCommand command, CancellationToken cancellationToken = new CancellationToken())
         {
             var answer = _dbContext.Answers.First(x => x.Id == command.AnswerId);
-            answer.IsCurrent = true;
+            answer.IsCurrent = command.IsCurrent;
             _dbContext.Entry(answer).Property(x => x.IsCurrent).IsModified = true;
             return _dbContext.SaveChangesAsync(cancellationToken);
         }
