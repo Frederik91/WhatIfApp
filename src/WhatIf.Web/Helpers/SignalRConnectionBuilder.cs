@@ -12,15 +12,29 @@ namespace WhatIf.Web.Helpers
     public class SignalRConnectionBuilder : ISignalRConnectionBuilder
     {
         private readonly NavigationManager _navigationManager;
+        private string _baseUri;
+
 
         public SignalRConnectionBuilder(NavigationManager navigationManager)
         {
             _navigationManager = navigationManager;
         }
 
-        public HubConnection Build()
+        public async Task<HubConnection> Build()
         {
-            var uri = new Uri(_navigationManager.BaseUri + "gamehub");
+            while (string.IsNullOrWhiteSpace(_baseUri))
+            {
+                try
+                {
+                    _baseUri = _navigationManager.BaseUri;
+                }
+                catch
+                {
+                    await Task.Delay(100);
+                }
+            }
+
+            var uri = new Uri(_baseUri + "gamehub");
             var connection = new HubConnectionBuilder()
                 .WithUrl(uri)
                 .Build();

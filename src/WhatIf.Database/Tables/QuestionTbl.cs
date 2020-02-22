@@ -19,5 +19,6 @@ namespace WhatIf.Database.Tables
         public Guid SessionId { get; set; }
         public SessionTbl Session { get; set; }
         public Guid PlayerToReadQuestionId { get; set; }
+        public bool IsCurrent { get; set; }
     }
 }

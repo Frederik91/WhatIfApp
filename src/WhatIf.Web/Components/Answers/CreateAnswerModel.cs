@@ -7,5 +7,6 @@ namespace WhatIf.Web.Components.Answers
         public string Title { get; set; }
         public QuestionDto Question { get; set; }
         public string Content { get; set; }
+        public bool IsAnswered { get; set; }
     }
 }

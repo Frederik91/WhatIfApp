@@ -36,11 +36,11 @@ else if (Current is null)
 {
     <h1>Waiting for your turn</h1>
 }
-else if (ReadQuestion)
+else if (IsReadingQuestion)
 {
     <QuestionReader Question="@Current.Question"></QuestionReader>
 }
-else if (ReadAnswer)
+else if (IsReadingAnswer)
 {
     <AnswerReader Answer="@Current.Answer"></AnswerReader>
     <MatButton OnClick="@(async x => await OnNextQuestion())">Next question</MatButton>

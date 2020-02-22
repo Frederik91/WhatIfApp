@@ -42,5 +42,10 @@ namespace WhatIf.Database.Services.Questions
         {
             return _commandExecutor.ExecuteAsync(new MarkQuestionAsReadCommand { QuestionId = questionId });
         }
+
+        public Task MarkQuestionAsCurrent(Guid questionId)
+        {
+            return _commandExecutor.ExecuteAsync(new MarkQuestionAsCurrentCommand { QuestionId = questionId });
+        }
     }
 }

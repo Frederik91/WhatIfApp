@@ -1,21 +1,7 @@
 ﻿@inherits AnswersCreatorComponentBase;
 
-<style>
-    .demo-mat-card {
-        max-width: 400px;
-    }
 
-    .demo-mat-card-content {
-        padding: 1rem;
-    }
-
-    .demo-mat-card-clean-margin {
-        margin: 0px;
-    }
-</style>
-@foreach (var answer in Answers)
-{
-    <h3 style="margin-bottom: 5px">@answer.Title</h3>
-    <AnswerCreator CreateAnswer="@answer"></AnswerCreator>
-}
-<MatButton OnClick="@(async x => await Submit())">Submit</MatButton>
+<div class="container-answers">
+    <h3>Answer @(Answers.IndexOf(CurrentAnswer) + 1) of @Answers.Count</h3>
+    <AnswerCreator CreateAnswer="@CurrentAnswer" OnSubmit="@(x => NextQuestion())"></AnswerCreator>
+</div>

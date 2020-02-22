@@ -13,7 +13,7 @@ namespace WhatIf.Web
         {
             serviceRegistry.RegisterFrom<Core.CompositionRoot>();
             serviceRegistry.RegisterFrom<Database.CompositionRoot>();
-            serviceRegistry.Register<ISignalRConnectionBuilder, SignalRConnectionBuilder>();
+            serviceRegistry.Register<ISignalRConnectionBuilder, SignalRConnectionBuilder>(new PerScopeLifetime());
         }
     }
 }

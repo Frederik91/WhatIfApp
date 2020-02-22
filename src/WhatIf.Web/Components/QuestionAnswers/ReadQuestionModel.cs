@@ -12,5 +12,6 @@ namespace WhatIf.Web.Components.QuestionAnswers
         public Guid AssignedAnswerId { get; set; }
         public Guid Id { get; set; }
         public bool IsRead { get; set; }
+        public bool IsCurrent { get; set; }
     }
 }

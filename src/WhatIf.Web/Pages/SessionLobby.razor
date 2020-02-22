@@ -201,7 +201,7 @@
 
     private async Task ConnectToSignalRHub(Guid sessionId, Guid playerId)
     {
-        _connection = SignalRConnectionBuilder.Build();
+        _connection = await SignalRConnectionBuilder.Build();
 
         _connection.On<Guid>("PlayerJoined", OnPlayerJoined);
         _connection.On<Guid>("PlayerLeft", OnPlayerLeft);

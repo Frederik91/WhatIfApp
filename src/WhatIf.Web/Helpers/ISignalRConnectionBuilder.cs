@@ -6,6 +6,6 @@ namespace WhatIf.Web.Helpers
 {
     public interface ISignalRConnectionBuilder
     {
-        HubConnection Build();
+        Task<HubConnection> Build();
     }
 }

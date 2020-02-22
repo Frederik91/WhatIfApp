@@ -390,7 +390,6 @@ body {
 
 .container-lobby #player-list li {
   background: #a9bcd0;
-  color: black;
   margin-top: 5px;
   margin-right: 1em;
   padding: 20px;
@@ -407,6 +406,7 @@ body {
 .container-game {
   width: 100%;
   height: 100%;
+  padding: 15px;
   display: -ms-grid;
   display: grid;
   -ms-grid-rows: 100%;
@@ -420,6 +420,8 @@ body {
 
 .container-game h1 {
   place-self: center;
+  -ms-grid-column-align: center;
+      justify-self: center;
   text-align: center;
   color: #d8dbe2;
 }
@@ -437,36 +439,40 @@ body {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  justify-items: center;
 }
 
 .container-game .container-questions h3 {
   -ms-grid-row: 1;
   -ms-grid-column: 1;
   grid-area: header;
-  -ms-flex-item-align: center;
-      -ms-grid-row-align: center;
-      align-self: center;
-  -ms-grid-column-align: center;
-      justify-self: center;
-  background: #a9bcd0;
   text-align: center;
+  background: #a9bcd0;
   color: black;
   padding: 15px;
+  width: 100%;
+  max-width: 300px;
   margin: 0 0;
   border-radius: 15px;
   -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.container-game .container-questions .demo-mat-card {
+.container-game .container-questions #question {
   margin: 0 1em;
   -ms-grid-row: 2;
   -ms-grid-column: 1;
   grid-area: card;
   background: #a9bcd0;
+  max-width: 300px;
+  width: 100%;
+  color: black;
+  padding: 15px;
+  margin: 0 0;
+  border-radius: 15px;
 }
 
-.container-game .container-questions .demo-mat-card textarea {
+.container-game .container-questions #question textarea {
   overflow: auto;
   margin-top: 20px;
   padding: 5px;
@@ -474,23 +480,104 @@ body {
 }
 
 .container-game .container-questions .mdc-button {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -ms-grid-row: 3;
+  -ms-grid-row: 4;
   -ms-grid-column: 1;
   grid-area: next;
-  -ms-flex-item-align: center;
-      -ms-grid-row-align: center;
-      align-self: center;
-  -ms-grid-column-align: center;
-      justify-self: center;
   background: #a9bcd0;
-  text-align: center;
   height: 60px;
   color: black;
   padding: 20px;
+  max-width: 300px;
   margin: 0 0;
+  width: 100%;
+  border-radius: 15px;
+  -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.container-game .container-answers {
+  width: 100%;
+  height: 100%;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-rows: 10% 30% 40% 20%;
+      grid-template-rows: 10% 30% 40% 20%;
+  -ms-grid-columns: 100%;
+      grid-template-columns: 100%;
+      grid-template-areas: "header" "question" "answer" "next";
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  justify-items: center;
+}
+
+.container-game .container-answers h3 {
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  grid-area: header;
+  text-align: center;
+  background: #a9bcd0;
+  color: black;
+  padding: 15px;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 0;
+  border-radius: 15px;
+  -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.container-game .container-answers #question {
+  margin: 0 1em;
+  -ms-grid-row: 2;
+  -ms-grid-column: 1;
+  grid-area: question;
+  background: #a9bcd0;
+  max-width: 300px;
+  text-align: center;
+  width: 100%;
+  color: black;
+  padding: 15px;
+  margin: 0 0;
+  border-radius: 15px;
+}
+
+.container-game .container-answers #question p {
+  margin: 0;
+}
+
+.container-game .container-answers #answer {
+  margin: 0 1em;
+  -ms-grid-row: 3;
+  -ms-grid-column: 1;
+  grid-area: answer;
+  background: #a9bcd0;
+  max-width: 300px;
+  width: 100%;
+  color: black;
+  padding: 15px;
+  margin: 0 0;
+  border-radius: 15px;
+}
+
+.container-game .container-answers #answer textarea {
+  overflow: auto;
+  margin-top: 20px;
+  padding: 5px;
+  min-height: 120px;
+}
+
+.container-game .container-answers .mdc-button {
+  -ms-grid-row: 4;
+  -ms-grid-column: 1;
+  grid-area: next;
+  background: #a9bcd0;
+  height: 60px;
+  color: black;
+  padding: 20px;
+  max-width: 300px;
+  margin: 0 0;
+  width: 100%;
   border-radius: 15px;
   -webkit-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);

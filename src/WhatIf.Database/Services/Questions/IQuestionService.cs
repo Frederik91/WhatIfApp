@@ -11,5 +11,6 @@ namespace WhatIf.Database.Services.Questions
         Task AssignQuestions(Guid sessionId);
         Task<IReadOnlyCollection<QuestionDto>> GetQuestionsToAnswer(Guid playerId);
         Task MarkQuestionAsRead(Guid questionId);
+        Task MarkQuestionAsCurrent(Guid questionId);
     }
 }

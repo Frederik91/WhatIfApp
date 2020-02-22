@@ -63,7 +63,6 @@ namespace WhatIf.Web
             using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 using var context = scope.ServiceProvider.GetService<WhatIfDbContext>();
-                //context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
             }
 

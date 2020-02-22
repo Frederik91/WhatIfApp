@@ -45,7 +45,12 @@ namespace WhatIf.Database.Services.Answers
 
         public Task<int> GetRemainingAnswerCount(Guid sessionId)
         {
-            return _queryExecutor.ExecuteAsync(new RemainingAnswersCountQuery {SessionId = sessionId});
+            return _queryExecutor.ExecuteAsync(new RemainingAnswersCountQuery { SessionId = sessionId });
+        }
+
+        public Task MarkAnswerAsCurrent(Guid answerId)
+        {
+            return _commandExecutor.ExecuteAsync(new MarkAnswerAsCurrentCommand { AnswerId = answerId });
         }
     }
 }

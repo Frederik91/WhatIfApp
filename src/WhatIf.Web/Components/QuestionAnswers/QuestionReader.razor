@@ -1,12 +1,8 @@
 ﻿@inherits QuestionReaderComponentBase
 
-<MatCard class="demo-mat-card">
-    <MatCardContent>
-        <MatBody1 class="demo-mat-card-content demo-mat-card-clean-margin">
-            Question:
-        </MatBody1>
-        <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
-            @Question.Content
-        </MatBody2>
-    </MatCardContent>
-</MatCard>
+<div id="question-title">
+    <p>Question</p>
+</div>
+<div id="question-content">
+    <p> @Question.Content</p>
+</div>

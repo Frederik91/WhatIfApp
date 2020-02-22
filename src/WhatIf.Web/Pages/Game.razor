@@ -28,20 +28,20 @@
     }
     else if (IsWaitingForOtherPlayers)
     {
-        <h1>Waiting for remaining players</h1>
+    <h1>Waiting for remaining players</h1>
     }
     else if (IsAnsweringQuestions)
     {
-        <AnswersCreator PlayerId="@_player.Id" OnSubmit="@(async x => await SubmitAnswers(x))"></AnswersCreator>
+    <AnswersCreator PlayerId="@_player.Id" OnSubmit="@(async x => await SubmitAnswers(x))"></AnswersCreator>
     }
 
     else if (ShowReadingRound)
     {
-        <QuestionAnswersReader PlayerId="@_player.Id" Connection="@_connection"></QuestionAnswersReader>
+    <QuestionAnswersReader PlayerId="@_player.Id" Connection="@_connection"></QuestionAnswersReader>
     }
     else
     {
-        <div class="loader"></div>
+    <div class="loader"></div>
     }
 </div>
 
@@ -92,7 +92,7 @@
     {
         if (!firstRender)
             return;
-        
+
         IsLoading = true;
         try
         {
@@ -116,7 +116,7 @@
 
 
             _players.AddRange(playersInSession);
-            await ConnectToSignalRHub(_session.Id, _player.Id);
+            await ConnectToSignalRHub();
 
             if (!_player.HasSubmittedQuestions)
                 IsCreatingQuestions = true;
@@ -131,8 +131,16 @@
 
             while (true)
             {
-                NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
-                break;
+                try
+                {
+                    NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
+                    break;
+                }
+                catch
+                {
+                    // Try again
+                }
+
             }
 
         }
@@ -147,9 +155,9 @@
         await _connection.InvokeAsync("LeaveGame", _session.Id, _player.Id);
     }
 
-    private async Task ConnectToSignalRHub(Guid sessionId, Guid playerId)
+    private async Task ConnectToSignalRHub()
     {
-        _connection = SignalRConnectionBuilder.Build();
+        _connection = await SignalRConnectionBuilder.Build();
         _connection.On<Guid>("PlayerSubmittedQuestions", OnPlayerSubmittedQuestions);
         _connection.On<Guid>("PlayerSubmittedAnswers", OnPlayerSubmittedAnswers);
         _connection.On("StartAnsweringQuestions", OnStartAnsweringQuestions);

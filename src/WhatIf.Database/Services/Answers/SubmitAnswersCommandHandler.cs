@@ -29,6 +29,7 @@ namespace WhatIf.Database.Services.Answers
                 Content = x.Answer,
                 SessionId = player.SessionId
             });
+            player.HasSubmittedAnswers = true;
             _dbContext.Answers.AddRange(answers);
             return _dbContext.SaveChangesAsync(cancellationToken);
         }
