@@ -1,20 +1,9 @@
 ﻿@inherits QuestionsCreatorComponentBase
 
-<style>
-    .demo-mat-card {
-        max-width: 400px;
-    }
-
-    .demo-mat-card-content {
-        padding: 1rem;
-    }
-
-    .demo-mat-card-clean-margin {
-        margin: 0px;
-    }
-</style>
-
-<div class="container-questions">
-    <h3>Question @(Questions.IndexOf(CurrentQuestion) + 1) of @QuestionCount</h3>
-    <QuestionCreator CreateQuestion="@CurrentQuestion" OnSubmit="@(x => NextQuestion())"></QuestionCreator>
-</div>
+@if (Questions != null && CurrentQuestion != null)
+{
+    <div class="container-questions">
+        <h3>Question @(Questions.IndexOf(CurrentQuestion) + 1) of @QuestionCount</h3>
+        <QuestionCreator CreateQuestion="@CurrentQuestion" OnSubmit="@(x => NextQuestion())"></QuestionCreator>
+    </div>
+}

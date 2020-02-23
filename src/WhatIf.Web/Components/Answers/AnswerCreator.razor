@@ -1,11 +1,15 @@
 ﻿@inherits AnswerCreatorComponentBase
 
-<div id="question">
-    <p>@CreateAnswer.Question.Content</p>
-</div>
+@if (CreateAnswer != null)
+{
+    <div id="question">
+        <p>@CreateAnswer.Question.Content</p>
+    </div>
 
-<div id="answer">
-    <MatTextField @bind-Value="@CreateAnswer.Content" Label="Write answer here" FullWidth="true" TextArea="true"></MatTextField>
-</div>
+    <div id="answer">
+        <MatTextField @bind-Value="@CreateAnswer.Content" Label="Write answer here" FullWidth="true" TextArea="true"></MatTextField>
+    </div>
 
-<MatButton OnClick="@(x => Submit())">Submit</MatButton>
+    <MatButton OnClick="@(x => Submit())">Submit</MatButton>
+}
+

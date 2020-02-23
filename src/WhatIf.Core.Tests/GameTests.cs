@@ -28,7 +28,7 @@ namespace WhatIf.Core.Tests
         [Theory, Scoped, InjectData]
         public async Task CreateSession(ISessionService sessionService)
         {
-            var session = await sessionService.Create("Test");
+            var session = await sessionService.Create();
             var fetchedSession = await sessionService.Get(session.Id);
 
             Assert.Equal(session.Name, fetchedSession.Name);
@@ -45,7 +45,7 @@ namespace WhatIf.Core.Tests
 
         private async Task PlayGame(ISessionService sessionService, IPlayerService playerService, IQuestionService questionService, IAnswerService answerService, int playerAndCardCount)
         {
-            var session = await sessionService.Create("Test");
+            var session = await sessionService.Create();
 
             var players = new List<PlayerDto>();
             session.CardAmount = playerAndCardCount;

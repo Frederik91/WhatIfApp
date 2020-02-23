@@ -1,11 +1,12 @@
 ﻿$colors: (
-  accent: #d8dbe2,
+  accent: #FAF7FF,
   backgrnd: #324454,
   backgrnd-dark: darken(#324454, 30%),
-  backgrnd-card: #a9bcd0
+  backgrnd-card: #FAF7FF
 );
 $padding: 15px;
 $borders: 15px;
+$box-shadow: 12px 12px 12px 0 rgba(0, 0, 0, .3);
 
 @function color($color-name) {
   @return map-get($colors, $color-name);
@@ -17,10 +18,10 @@ app {
 
 html,
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   height: 100%;
   width: 100%;
-  background-color: color(backgrnd);
+  background: rgb(63,94,251);
+  background: linear-gradient(319deg, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%);
 }
 
 .container-index {
@@ -42,6 +43,10 @@ body {
     text-align: center;
     margin: 0 1em;
     justify-self: center;
+
+    img {
+      width: 300px;
+    }
   }
 
   #rejoin {
@@ -52,7 +57,7 @@ body {
     text-align: center;
     color: color(backgrnd);
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
     justify-self: center;
     align-items: center;
     padding: 20px;
@@ -79,9 +84,8 @@ body {
     background: color(backgrnd-card);
     text-align: center;
     color: color(backgrnd);
-
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
     justify-self: center;
     align-items: center;
     padding: 20px;
@@ -132,7 +136,7 @@ body {
     margin: 1em auto;
     width: 155px;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
     justify-self: center;
   }
 }
@@ -185,7 +189,7 @@ body {
     margin: 1em auto;
     width: 155px;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
   }
 
   #header {
@@ -215,7 +219,7 @@ body {
     padding: 15px;
     margin: 0 0;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
 
     .card-count-field {
       grid-column: 1;
@@ -281,7 +285,7 @@ body {
     width: 200px;
     margin: 1em auto;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
 
     h4 {
       justify-self: center;
@@ -321,7 +325,7 @@ body {
 
       padding: 20px;
       border-radius: $borders;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: $box-shadow;
 
       h6 {
         margin-bottom: 0;
@@ -361,7 +365,7 @@ body {
     color: color(backgrnd-dark);
     width: 100%;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
   }
 
   #read-question {
@@ -382,7 +386,7 @@ body {
       color: color(backgrnd-dark);
       width: 100%;
       border-radius: $borders;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: $box-shadow;
     }
 
     #content {
@@ -395,7 +399,7 @@ body {
       color: color(backgrnd-dark);
       width: 100%;
       border-radius: $borders;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: $box-shadow;
     }
   }
 
@@ -417,7 +421,7 @@ body {
       color: color(backgrnd-dark);
       width: 100%;
       border-radius: $borders;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: $box-shadow;
     }
 
     #content {
@@ -430,7 +434,7 @@ body {
       color: color(backgrnd-dark);
       width: 100%;
       border-radius: $borders;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      box-shadow: $box-shadow;
     }
   }
 }
@@ -455,7 +459,7 @@ body {
     max-width: 300px;
     margin: 0 0;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
   }
 
   #question {
@@ -486,7 +490,7 @@ body {
     margin: 0 0;
     width: 100%;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
   }
 }
 
@@ -510,7 +514,7 @@ body {
     max-width: 300px;
     margin: 0 0;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
   }
 
   #question {
@@ -559,6 +563,6 @@ body {
     margin: 0 0;
     width: 100%;
     border-radius: $borders;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: $box-shadow;
   }
 }

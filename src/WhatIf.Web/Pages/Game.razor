@@ -24,7 +24,7 @@
 <div class="container-game">
     @if (IsCreatingQuestions)
     {
-        <QuestionsCreator QuestionCount="@_session.CardAmount" OnSubmit="@(async x => await SubmitQuestions(x))"></QuestionsCreator>
+        <QuestionsCreator SessionId="@_session.Id" QuestionCount="@_session.CardAmount" OnSubmit="@(async x => await SubmitQuestions(x))"></QuestionsCreator>
     }
     else if (IsWaitingForOtherPlayers)
     {

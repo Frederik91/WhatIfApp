@@ -56,9 +56,9 @@
 
                     <div class="card-count-field">
                         <h5>Number of cards</h5>
-                        <MatButton id="down" OnClick="@(x => CardAmount--)">-</MatButton>
+                        <MatButton id="down" OnClick="@(x => { if (CardAmount > 1) CardAmount--; })">-</MatButton>
                         <h4>@CardAmount</h4>
-                        <MatButton id="up" OnClick="@(x => CardAmount++)">+</MatButton>
+                        <MatButton id="up" OnClick="@(x => { if (CardAmount < 10) CardAmount++; })">+</MatButton>
                     </div>
                 </div>
             }
